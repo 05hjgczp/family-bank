@@ -2,600 +2,291 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="家庭银行">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <meta name="theme-color" content="#6C5CE7">
-<meta name="description" content="家庭银行 - 帮助孩子建立正确的理财观念">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="家庭银行">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 512'><rect width='192' height='512' rx='40' fill='%236C5CE7'/><text x='96' y='340' text-anchor='middle' font-size='220'>🏦</text></svg>">
+<link rel="apple-touch-icon" href="icon-192.svg">
 <title>家庭银行</title>
 <style>
-/* ========== RESET & BASE ========== */
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;background:#f5f6fa;color:#333;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
 button{border:none;cursor:pointer;font-family:inherit}
-input,select,textarea{font-family:inherit;outline:none}
-html,body{height:100%;overflow:hidden;background:#f5f6fa}
+input,select{font-family:inherit;outline:none}
 
-/* ========== ROOT VARIABLES ========== */
-:root{
-  --primary:#6C5CE7;
-  --primary-light:#a29bfe;
-  --green:#00b894;
-  --orange:#e17055;
-  --yellow:#fdcb6e;
-  --text-dark:#1a1a2e;
-  --text-gray:#888;
-  --bg:#f5f6fa;
-  --safe-top:env(safe-area-inset-top,0px);
-  --safe-bottom:env(safe-area-inset-bottom,0px);
-}
+#app{max-width:480px;margin:0 auto;height:100vh;height:100dvh;display:flex;flex-direction:column;position:relative;background:#f5f6fa;overflow:hidden}
 
-/* ========== APP CONTAINER ========== */
-.app-container{
-  height:100%;
-  max-width:100%;
-  margin:0 auto;
-  background:var(--bg);
-  display:flex;
-  flex-direction:column;
-  position:relative;
-  overflow:hidden;
-}
+/* Status Bar */
+.status-bar{height:env(safe-area-inset-top,0);background:#fff;flex-shrink:0}
 
-/* ========== STATUS BAR ========== */
-.status-bar{
-  height:calc(44px + var(--safe-top));
-  padding-top:var(--safe-top);
-  background:#fff;
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  padding-left:20px;
-  padding-right:20px;
-  padding-bottom:8px;
-  flex-shrink:0;
-  z-index:10;
-}
-.status-bar .time{font-size:14px;font-weight:600;color:#333}
-.status-bar .icons{display:flex;gap:4px;align-items:center}
-.status-bar .sbi{font-size:12px}
+/* Tab Bar */
+.tab-bar{height:56px;background:#fff;border-top:1px solid #eee;display:flex;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0)}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#999;font-size:10px;transition:color .2s}
+.tab-item.active{color:#6C5CE7}
+.tab-item svg{width:22px;height:22px}
+.tab-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.tab-center-btn{width:44px;height:44px;background:linear-gradient(135deg,#6C5CE7,#a29bfe);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(108,92,231,0.4);margin-top:-18px}
+.tab-center-btn svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round}
+.tab-center span{font-size:10px;color:#999}
 
-/* ========== PAGE HEADER ========== */
-.page-header{background:#fff;padding:14px 20px 12px;flex-shrink:0}
-.page-header h1{font-size:22px;font-weight:700;color:var(--text-dark)}
-.page-header .subtitle{font-size:13px;color:var(--text-gray);margin-top:3px;display:flex;align-items:center;gap:4px}
-.subtitle-txt{cursor:pointer}
-.subtitle-txt:hover{color:#6C5CE7}
-
-/* ========== APP CONTENT ========== */
-.app-content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+/* Views */
+.view{display:none;flex:1;overflow:hidden;flex-direction:column}
+.view.active{display:flex}
+.app-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .app-content::-webkit-scrollbar{display:none}
 
-/* ========== TAB BAR ========== */
-.tab-bar{
-  height:calc(60px + var(--safe-bottom));
-  padding-bottom:var(--safe-bottom);
-  background:#fff;
-  border-top:1px solid #eee;
-  display:flex;
-  flex-shrink:0;
-  z-index:10;
-}
-.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#999;font-size:10px;transition:color .2s;padding:6px 0}
-.tab-item.active{color:var(--primary)}
-.tab-item svg{width:22px;height:22px}
-.tab-center{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
-.tab-center-btn{width:48px;height:48px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(108,92,231,0.4);margin-top:-16px}
-.tab-center-btn svg{width:26px;height:26px;stroke:#fff;stroke-width:2.5;fill:none}
-.tab-center span{font-size:10px;color:#999;margin-top:2px}
+/* Page Header */
+.page-header{background:#fff;padding:16px 20px 12px;flex-shrink:0}
+.page-header h1{font-size:22px;font-weight:700;color:#1a1a2e}
+.page-header .subtitle{font-size:13px;color:#888;margin-top:2px;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
 
-/* ========== VIEW SWITCHING ========== */
-.view{display:none;height:100%;flex-direction:column}
-.view.active{display:flex}
-
-/* ========== BALANCE CARD ========== */
-.balance-card{
-  margin:10px 16px;
-  padding:20px 18px;
-  background:linear-gradient(135deg,var(--primary),var(--primary-light));
-  border-radius:18px;
-  color:#fff;
-  box-shadow:0 8px 24px rgba(108,92,231,0.28);
-}
-.balance-card .label{font-size:12px;opacity:.85}
-.balance-card .amount{font-size:38px;font-weight:700;margin:4px 0 14px;letter-spacing:-1px}
-.balance-card .amount .unit{font-size:16px;font-weight:400;margin-left:2px;opacity:.8}
-.balance-stats{display:flex;gap:0}
-.balance-stats .stat{flex:1;text-align:center}
-.balance-stats .stat+.stat{border-left:1px solid rgba(255,255,255,.2)}
+/* ===== HOME ===== */
+.balance-card{margin:12px 16px;padding:20px;background:linear-gradient(135deg,#6C5CE7,#a29bfe);border-radius:16px;color:#fff;box-shadow:0 8px 24px rgba(108,92,231,0.3)}
+.balance-card .label{font-size:12px;opacity:.8}
+.balance-card .amount{font-size:36px;font-weight:700;margin:4px 0 12px}
+.balance-card .amount .unit{font-size:16px;font-weight:400;margin-left:2px}
+.balance-stats{display:flex;gap:12px}
+.balance-stats .stat{flex:1}
 .balance-stats .stat-label{font-size:10px;opacity:.7}
-.balance-stats .stat-val{font-size:16px;font-weight:600;margin-top:2px}
+.balance-stats .stat-val{font-size:15px;font-weight:600;margin-top:2px}
 
-/* ========== QUICK ACTIONS ========== */
-.quick-actions{display:flex;gap:10px;padding:14px 16px}
-.quick-btn{flex:1;padding:12px 8px;border-radius:14px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 2px 10px rgba(0,0,0,.05);transition:transform .1s}
-.quick-btn:active{transform:scale(.95)}
-.quick-btn .icon-circle{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
-.quick-btn .btn-label{font-size:11px;color:#555;font-weight:500}
-.icon-green{background:#e8f8f0;color:var(--green)}
-.icon-orange{background:#fff3e0;color:var(--orange)}
-.icon-purple{background:#f0edff;color:var(--primary)}
+.quick-actions{display:flex;gap:10px;padding:12px 16px 16px}
+.quick-btn{flex:1;padding:12px 8px;border-radius:12px;background:#fff;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,0.04);transition:transform .1s}
+.quick-btn:active{transform:scale(.96)}
+.quick-btn .icon-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+.quick-btn .btn-label{font-size:12px;color:#555;font-weight:500}
+.icon-green{background:#e8f8f0;color:#00b894}
+.icon-orange{background:#fff3e0;color:#e17055}
+.icon-purple{background:#f0edff;color:#6c5ce7}
 
-/* ========== SECTION TITLE ========== */
-.section-title{font-size:14px;font-weight:600;color:var(--text-dark);padding:12px 16px 6px}
+.section-title{font-size:15px;font-weight:600;color:#1a1a2e;padding:16px 16px 8px}
 
-/* ========== TODAY SUMMARY ========== */
-.today-summary{display:flex;gap:10px;padding:0 16px}
-.summary-item{flex:1;padding:12px;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.summary-item .s-label{font-size:11px;color:#999}
-.summary-item .s-val{font-size:18px;font-weight:700;margin-top:4px}
-.s-val.green{color:var(--green)}
-.s-val.orange{color:var(--orange)}
+.monthly-grid{padding:0 16px}
+.monthly-row{display:flex;gap:8px;margin-bottom:8px}
+.monthly-item{flex:1;padding:12px;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.monthly-item .s-label{font-size:11px;color:#999}
+.monthly-item .s-val{font-size:16px;font-weight:700;margin-top:4px}
+.s-val.green{color:#00b894}
+.s-val.orange{color:#e17055}
+.s-val.purple{color:#6C5CE7}
 
-/* ========== RECENT LIST ========== */
-.recent-list{padding:6px 16px 16px}
-.recent-item{display:flex;align-items:center;gap:12px;padding:12px;background:#fff;border-radius:12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.03);cursor:pointer}
-.recent-item:active{opacity:.8}
-.ri-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
-.ri-info{flex:1;min-width:0}
-.ri-title{font-size:13px;font-weight:500;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ri-time{font-size:11px;color:#999;margin-top:2px}
-.ri-amount{font-size:15px;font-weight:600;flex-shrink:0}
-.ri-amount.income{color:var(--green)}
-.ri-amount.expense{color:var(--orange)}
-.ri-amount.interest{color:var(--primary)}
+.recent-list{padding:0 16px 16px}
+.ri-col-header{display:flex;gap:6px;padding:4px 16px 6px;font-size:10px;color:#aaa;align-items:center}
+.ri-col-header span{min-width:52px;text-align:center}
+.ri-col-header .ri-ch-icon{min-width:36px;text-align:center}
+.ri-col-header .ri-ch-info{flex:1}
 
-/* ========== TRANSACTIONS PAGE ========== */
-.filter-tabs{display:flex;padding:10px 16px;gap:8px;background:#fff;flex-shrink:0}
-.filter-tab{padding:6px 16px;border-radius:16px;font-size:12px;background:#f0f0f5;color:#666;transition:all .2s;cursor:pointer;white-space:nowrap}
-.filter-tab.active{background:var(--primary);color:#fff}
+.recent-item{display:flex;align-items:center;gap:10px;padding:12px;background:#fff;border-radius:10px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,0.03);cursor:pointer}
+.recent-item:active{background:#f8f8fa}
+.recent-item .ri-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.recent-item .ri-info{flex:1;min-width:0}
+.recent-item .ri-title{font-size:13px;font-weight:500;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-item .ri-time{font-size:11px;color:#999;margin-top:2px}
+.recent-item .ri-amounts{display:flex;gap:4px;flex-shrink:0;align-items:flex-end}
+.recent-item .ri-amt-col{text-align:center;min-width:48px}
+.recent-item .ri-amt-val{font-size:13px;font-weight:600}
+.ri-amt-val.deposit{color:#00b894}
+.ri-amt-val.deduct{color:#e17055}
+.ri-amt-val.fund{color:#6C5CE7}
+.ri-amt-val.muted{color:#ccc}
 
-.date-filter{display:flex;gap:6px;padding:8px 16px;background:#fff;border-bottom:1px solid #f0f0f0;flex-shrink:0}
-.date-chip{padding:4px 10px;border-radius:12px;font-size:11px;background:#f5f6fa;color:#888;cursor:pointer;white-space:nowrap}
-.date-chip.active{background:#f0edff;color:var(--primary)}
+/* ===== TRANSACTIONS ===== */
+.filter-tabs{display:flex;padding:12px 16px;gap:8px;background:#fff;flex-shrink:0;overflow-x:auto}
+.filter-tab{padding:6px 16px;border-radius:16px;font-size:12px;background:#f0f0f5;color:#666;white-space:nowrap;transition:all .2s}
+.filter-tab.active{background:#6C5CE7;color:#fff}
+.date-filter{display:flex;gap:6px;padding:8px 16px;background:#fff;border-bottom:1px solid #f0f0f0;flex-shrink:0;overflow-x:auto}
+.date-chip{padding:4px 10px;border-radius:12px;font-size:11px;background:#f5f6fa;color:#888;white-space:nowrap;cursor:pointer}
+.date-chip.active{background:#f0edff;color:#6C5CE7}
 
 .trx-list{padding:12px 16px}
 .trx-date-group{margin-bottom:12px}
 .trx-date-label{font-size:12px;color:#999;margin-bottom:6px;padding-left:4px}
-.trx-item{display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border-radius:12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.03);cursor:pointer}
-.trx-item:active{opacity:.85}
-.ti-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.ti-info{flex:1;min-width:0}
-.ti-title{font-size:14px;font-weight:500;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ti-desc{font-size:11px;color:#999;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ti-right{text-align:right;flex-shrink:0}
-.ti-amount{font-size:16px;font-weight:600}
-.ti-balance{font-size:10px;color:#bbb;margin-top:2px}
+.trx-item{display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border-radius:12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,0.03);cursor:pointer}
+.trx-item:active{background:#f8f8fa}
+.trx-item .ti-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.trx-item .ti-info{flex:1;min-width:0}
+.trx-item .ti-title{font-size:14px;font-weight:500;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trx-item .ti-desc{font-size:11px;color:#999;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trx-item .ti-right{text-align:right;flex-shrink:0}
+.trx-item .ti-amount{font-size:16px;font-weight:600}
+.trx-item .ti-sub{font-size:10px;color:#bbb;margin-top:2px}
 
-.trx-summary-bar{
-  position:sticky;bottom:0;
-  height:calc(52px + var(--safe-bottom));
-  padding-bottom:var(--safe-bottom);
-  background:#fff;
-  padding:12px 16px;
-  border-top:1px solid #f0f0f0;
-  display:flex;
-  justify-content:space-around;
-  flex-shrink:0;
-}
-.ts-item{text-align:center}
-.ts-label{color:#999;font-size:10px}
-.ts-val{font-weight:600;margin-top:2px}
+.trx-summary-bar{background:#fff;padding:12px 16px;border-top:1px solid #f0f0f0;display:flex;justify-content:space-around;font-size:12px;flex-shrink:0}
+.trx-summary-bar .ts-item{text-align:center}
+.trx-summary-bar .ts-label{color:#999;font-size:10px}
+.trx-summary-bar .ts-val{font-weight:600;margin-top:2px}
 
-/* ========== RULES PAGE ========== */
-.rules-header{
-  background:linear-gradient(135deg,var(--primary),var(--primary-light));
-  padding:16px 16px 20px;
-  color:#fff;
-  flex-shrink:0;
-}
-.rules-header .rh-top{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-.back-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;border:none;flex-shrink:0}
-.back-btn:active{opacity:.8}
-.rules-header h1{font-size:20px;font-weight:700;flex:1}
-.rules-header p{font-size:12px;opacity:.75;margin-top:2px}
+.empty-state{text-align:center;padding:40px 20px;color:#ccc}
+.empty-state .empty-icon{font-size:48px;margin-bottom:12px}
+.empty-state p{font-size:14px;color:#999}
 
-.interest-card{
-  background:linear-gradient(135deg,#fdcb6e,#f39c12);
-  border-radius:16px;
-  padding:16px;
-  margin:12px 16px;
-  color:#fff;
-  box-shadow:0 4px 16px rgba(243,156,18,.25);
-}
-.ic-label{font-size:12px;opacity:.85}
-.ic-rate{font-size:30px;font-weight:700;margin:4px 0}
-.ic-sub{font-size:11px;opacity:.7}
-.ic-total{
-  display:flex;
-  justify-content:space-between;
-  margin-top:12px;
-  padding-top:10px;
-  border-top:1px solid rgba(255,255,255,.3);
-}
-.ic-total div{text-align:center;flex:1}
-.it-label{font-size:10px;opacity:.7}
-.it-val{font-size:15px;font-weight:600;margin-top:2px}
-.interest-card .change-rate-btn{
-  margin-top:12px;width:100%;padding:10px;border-radius:8px;
-  background:rgba(255,255,255,.2);color:#fff;font-size:13px;font-weight:500;border:none;
-}
+/* ===== RULES ===== */
+.rules-header{background:linear-gradient(135deg,#6C5CE7,#a29bfe);padding:20px 20px 16px;color:#fff;flex-shrink:0}
+.rules-header h1{font-size:20px;font-weight:700}
+.rules-header p{font-size:12px;opacity:.8;margin-top:4px}
+
+.interest-card{background:linear-gradient(135deg,#fdcb6e,#f39c12);border-radius:14px;padding:16px;margin:12px 16px;color:#fff}
+.interest-card .ic-label{font-size:12px;opacity:.8}
+.interest-card .ic-rate{font-size:28px;font-weight:700;margin:4px 0}
+.interest-card .ic-sub{font-size:11px;opacity:.7}
+.interest-card .ic-total{display:flex;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.3)}
+.interest-card .ic-total div{text-align:center}
+.interest-card .ic-total .it-label{font-size:10px;opacity:.7}
+.interest-card .ic-total .it-val{font-size:15px;font-weight:600;margin-top:2px}
 
 .rule-section{padding:12px 16px 0}
-.rule-section-title{font-size:12px;font-weight:600;color:#888;margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase}
+.rule-section-title{font-size:13px;font-weight:600;color:#888;margin-bottom:8px;letter-spacing:1px}
 
-.source-item{
-  display:flex;align-items:center;gap:10px;
-  padding:12px;background:#fff;border-radius:10px;
-  margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.03);
-}
-.si-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0}
-.si-name{flex:1;font-size:14px;color:#333;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.si-edit{
-  padding:4px 10px;border-radius:6px;background:#f0f0f5;
-  font-size:12px;color:var(--primary);cursor:pointer;border:none;flex-shrink:0
-}
-.si-edit:active{opacity:.7}
+.source-item{display:flex;align-items:center;gap:10px;padding:12px;background:#fff;border-radius:10px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+.source-item .si-icon{font-size:20px}
+.source-item .si-name{flex:1;font-size:14px;color:#333;font-weight:500}
+.source-item .si-edit{padding:4px 10px;border-radius:6px;background:#f0f0f5;font-size:12px;color:#6C5CE7;cursor:pointer}
 
-.rule-card{
-  background:#fff;border-radius:14px;padding:16px;
-  margin:0 0 10px;box-shadow:0 2px 8px rgba(0,0,0,.04);
-}
-.rc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
-.rc-name{font-size:15px;font-weight:600;color:#333;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rc-tags{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.rule-card{background:#fff;border-radius:14px;padding:16px;margin:0 16px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.rule-card .rc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.rule-card .rc-name{font-size:15px;font-weight:600;color:#333}
+.rule-card .rc-desc{font-size:12px;color:#888;margin-bottom:12px}
+.rc-edit-btn{padding:4px 10px;border-radius:6px;background:rgba(108,92,231,0.1);font-size:12px;color:#6C5CE7;cursor:pointer;border:none}
 .rc-tag{font-size:10px;padding:3px 8px;border-radius:8px;background:#f0f0f5;color:#888}
-.rc-tag.preset{background:#f0edff;color:var(--primary)}
-.rc-edit-btn{padding:4px 10px;border-radius:6px;background:rgba(108,92,231,.1);font-size:12px;color:var(--primary);cursor:pointer;border:none}
-.rc-desc{font-size:12px;color:#888;margin-bottom:12px;line-height:1.4}
+.rc-tag.preset{background:#f0edff;color:#6C5CE7}
 
 .rule-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:#f0f0f5}
-.rule-bar .personal-bar{background:linear-gradient(90deg,var(--orange),#fab1a0);transition:width .3s}
-.rule-bar .bank-bar{background:linear-gradient(90deg,var(--green),#55efc4);transition:width .3s}
+.rule-bar .personal-bar{background:linear-gradient(90deg,#e17055,#fab1a0);transition:width .3s}
+.rule-bar .bank-bar{background:linear-gradient(90deg,#00b894,#55efc4);transition:width .3s}
 .rule-legend{display:flex;gap:16px;margin-top:8px}
-.legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#888}
+.rule-legend .legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#888}
 .legend-dot{width:8px;height:8px;border-radius:50%}
-.legend-dot.personal{background:var(--orange)}
-.legend-dot.bank{background:var(--green)}
+.legend-dot.personal{background:#e17055}
+.legend-dot.bank{background:#00b894}
 
-.add-btn{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  padding:14px;border-radius:12px;border:2px dashed #ddd;
-  color:#999;font-size:14px;background:#fff;margin:0 0 16px;width:100%;
-}
-.add-btn:active{opacity:.7}
+.add-rule-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:14px;border-radius:12px;border:2px dashed #ddd;color:#999;font-size:14px;width:calc(100% - 32px);margin:0 16px 16px;background:#fff;cursor:pointer}
 
-/* ========== PROFILE PAGE ========== */
+/* ===== PROFILE ===== */
 .profile-header{background:#fff;padding:20px;display:flex;align-items:center;gap:14px;flex-shrink:0}
-.profile-avatar{
-  width:56px;height:56px;border-radius:50%;
-  background:linear-gradient(135deg,var(--primary),var(--primary-light));
-  display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;
-  flex-shrink:0;
-}
+.profile-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#6C5CE7,#a29bfe);display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff}
 .profile-info h2{font-size:18px;font-weight:600;color:#333}
 .profile-info p{font-size:12px;color:#999;margin-top:2px}
 
-.child-list{padding:10px 16px}
-.child-card{
-  display:flex;align-items:center;gap:12px;padding:14px;
-  background:#fff;border-radius:12px;
-  box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:pointer;
-}
-.child-card:active{opacity:.8}
-.cc-avatar{
-  width:42px;height:42px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;color:#fff;flex-shrink:0;
-}
-.cc-info{flex:1}
-.cc-name{font-size:15px;font-weight:600;color:#333}
-.cc-balance{font-size:12px;color:var(--green);margin-top:2px}
-.cc-arrow{color:#ccc;font-size:16px}
+.child-card{display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border-radius:12px;margin:0 16px 8px;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.child-card .cc-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff}
+.child-card .cc-info{flex:1}
+.child-card .cc-name{font-size:15px;font-weight:600;color:#333}
+.child-card .cc-balance{font-size:12px;color:#00b894;margin-top:2px}
+.child-card .cc-arrow{color:#ccc;font-size:16px}
 
 .menu-section{padding:0 16px;margin-bottom:12px}
 .menu-section-title{font-size:12px;color:#999;margin-bottom:6px;padding-left:4px}
-.menu-item{
-  display:flex;align-items:center;gap:12px;padding:14px;
-  background:#fff;
-}
+.menu-item{display:flex;align-items:center;gap:12px;padding:14px;background:#fff;border-bottom:1px solid #f5f5f5;cursor:pointer}
 .menu-item:first-child{border-radius:12px 12px 0 0}
 .menu-item:last-child{border-radius:0 0 12px 12px;border-bottom:none}
 .menu-item:only-child{border-radius:12px}
-.menu-item+.menu-item{border-top:1px solid #f5f5f5}
-.mi-icon{
-  width:32px;height:32px;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
-}
-.mi-label{flex:1;font-size:14px;color:#333}
-.mi-value{font-size:13px;color:#999;margin-right:4px}
-.mi-arrow{color:#ccc;font-size:16px;font-weight:300}
+.menu-item:active{background:#f8f8fa}
+.menu-item .mi-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.menu-item .mi-label{flex:1;font-size:14px;color:#333}
+.menu-item .mi-arrow{color:#ccc;font-size:14px}
+.menu-item .mi-value{font-size:13px;color:#999;margin-right:4px}
 
-.dev-info{
-  text-align:center;
-  padding:20px;
-  font-size:12px;
-  color:#bbb;
-  flex-shrink:0;
-}
+/* ===== MODALS ===== */
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:100;display:none;justify-content:flex-end;flex-direction:column}
+.modal-overlay.show{display:flex}
+.modal-sheet{background:#fff;border-radius:20px 20px 0 0;max-height:85%;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0)}
+.modal-sheet .sheet-handle{width:36px;height:4px;background:#ddd;border-radius:2px;margin:10px auto}
+.modal-sheet .sheet-header{padding:8px 20px 12px;display:flex;justify-content:space-between;align-items:center}
+.modal-sheet .sheet-header h2{font-size:17px;font-weight:600}
+.modal-sheet .sheet-header .close-btn{width:28px;height:28px;border-radius:50%;background:#f0f0f5;display:flex;align-items:center;justify-content:center;font-size:14px;color:#999}
+.modal-sheet .sheet-body{padding:0 20px 30px}
 
-/* ========== MODALS ========== */
-.modal-overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.5);
-  z-index:100;
-  display:none;
-  justify-content:flex-end;
-  flex-direction:column;
-}
-.modal-overlay.show{display:flex;animation:fadeIn .2s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.record-type-toggle{display:flex;background:#f0f0f5;border-radius:10px;padding:3px;margin-bottom:20px}
+.record-type-btn{flex:1;padding:10px;text-align:center;border-radius:8px;font-size:14px;font-weight:500;color:#888;transition:all .2s}
+.record-type-btn.active{background:#fff;color:#6C5CE7;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
 
-.modal-sheet{
-  background:#fff;
-  border-radius:20px 20px 0 0;
-  max-height:88%;
-  overflow-y:auto;
-  animation:slideUp .28s ease;
-}
-.modal-sheet::-webkit-scrollbar{display:none}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.amount-input-area{text-align:center;padding:16px 0}
+.amount-display{font-size:42px;font-weight:700;color:#1a1a2e}
+.amount-display .prefix{font-size:20px;font-weight:400;color:#999;margin-right:4px}
+.quick-amounts{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.quick-amount-btn{padding:6px 16px;border-radius:16px;background:#f0f0f5;font-size:13px;color:#6C5CE7;font-weight:500}
 
-.sheet-handle{width:36px;height:4px;background:#ddd;border-radius:2px;margin:10px auto}
-.sheet-header{
-  padding:8px 20px 12px;
-  display:flex;justify-content:space-between;align-items:center;
-}
-.sheet-header h2{font-size:17px;font-weight:600}
-.close-btn{
-  width:28px;height:28px;border-radius:50%;
-  background:#f0f0f5;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;color:#999;border:none;
-}
-.close-btn:active{opacity:.7}
-.sheet-body{padding:0 20px 30px}
+.form-group{margin-bottom:16px}
+.form-label{font-size:13px;color:#888;margin-bottom:6px;display:block}
+.form-select{width:100%;padding:12px 16px;border:1px solid #e8e8e8;border-radius:10px;font-size:14px;background:#fff;color:#333;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23999'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.form-input{width:100%;padding:12px 16px;border:1px solid #e8e8e8;border-radius:10px;font-size:14px;color:#333}
+.form-input:focus{border-color:#6C5CE7}
 
-/* Record Modal */
-.record-type-toggle{
-  display:flex;background:#f0f0f5;border-radius:10px;
-  padding:3px;margin-bottom:20px;
-}
-.record-type-btn{
-  flex:1;padding:10px;text-align:center;
-  border-radius:8px;font-size:14px;font-weight:500;
-  color:#888;transition:all .2s;cursor:pointer;
-}
-.record-type-btn.active{
-  background:#fff;color:var(--primary);
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
+.funding-preview{background:#f8f7ff;border-radius:12px;padding:14px;margin:16px 0}
+.funding-preview .fp-title{font-size:12px;color:#888;margin-bottom:8px}
+.funding-preview .fp-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+.funding-preview .fp-row .fp-val{font-weight:600}
+.fp-val.personal{color:#e17055}
+.fp-val.bank{color:#00b894}
 
-.amount-input-area{text-align:center;padding:16px 0 8px}
-.amount-display{font-size:44px;font-weight:700;color:var(--text-dark);display:flex;align-items:baseline;justify-content:center}
-.amount-display .prefix{font-size:20px;font-weight:400;color:#999;margin-right:2px}
-.amount-display .val-lite{color:var(--text-dark)}
-
-.form-group{margin-bottom:14px}
-.form-label{font-size:13px;color:var(--text-gray);margin-bottom:6px;display:block}
-.form-select{
-  width:100%;padding:12px 36px 12px 14px;
-  border:1px solid #e8e8e8;border-radius:10px;
-  font-size:14px;background:#fff;color:#333;
-  appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23999'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;
-  background-position:right 12px center;
-}
-.form-input{
-  width:100%;padding:12px 14px;
-  border:1px solid #e8e8e8;border-radius:10px;
-  font-size:14px;color:#333;background:#fff;
-}
-.form-input:focus{border-color:var(--primary)}
-
-.quick-amounts{display:flex;gap:8px;margin:10px 0 16px;}
-.quick-amt{
-  flex:1;padding:10px;border-radius:8px;
-  background:#f0f0f5;font-size:14px;color:#555;
-  cursor:pointer;border:none;
-}
-.quick-amt:active{opacity:.7}
-
-.funding-preview{
-  background:#f8f7ff;border-radius:12px;
-  padding:14px;margin:12px 0 16px;
-}
-.fp-title{font-size:12px;color:#888;margin-bottom:8px}
-.fp-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
-.fp-row .fp-val{font-weight:600}
-.fp-val.personal{color:var(--orange)}
-.fp-val.bank{color:var(--green)}
-
-.submit-btn{
-  width:100%;padding:14px;border-radius:12px;
-  font-size:16px;font-weight:600;color:#fff;
-  background:linear-gradient(135deg,var(--primary),var(--primary-light));
-  box-shadow:0 4px 16px rgba(108,92,231,.3);
-  margin-top:4px;
-}
+.submit-btn{width:100%;padding:14px;border-radius:12px;font-size:16px;font-weight:600;color:#fff;background:linear-gradient(135deg,#6C5CE7,#a29bfe);box-shadow:0 4px 16px rgba(108,92,231,0.3);margin-top:8px}
 .submit-btn:active{opacity:.9}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
 
-/* Source/Rule Editor Modal */
-.ratio-display{
-  background:#f8f7ff;border-radius:10px;
-  padding:12px;margin-bottom:16px;
-}
-.rd-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0}
-.rd-row .rd-val{font-weight:600}
-.rd-row .rd-p{color:var(--orange)}
-.rd-row .rd-b{color:var(--green)}
+.rate-slider{width:100%;-webkit-appearance:none;height:8px;border-radius:4px;background:#e8e8e8;outline:none}
+.rate-slider::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#6C5CE7;box-shadow:0 2px 8px rgba(108,92,231,0.4);cursor:pointer}
 
-.rate-slider{
-  width:100%;-webkit-appearance:none;
-  height:8px;border-radius:4px;background:#e8e8e8;outline:none;
-}
-.rate-slider::-webkit-slider-thumb{
-  -webkit-appearance:none;width:26px;height:26px;border-radius:50%;
-  background:var(--primary);box-shadow:0 2px 8px rgba(108,92,231,.4);cursor:pointer;
-}
-.hint-text{font-size:11px;color:#999;margin:8px 0 16px;line-height:1.5}
+.trx-detail{padding:20px}
+.trx-detail .td-type-icon{width:56px;height:56px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.trx-detail .td-amount{text-align:center;font-size:28px;font-weight:700;margin-bottom:4px}
+.trx-detail .td-type-name{text-align:center;font-size:13px;color:#888;margin-bottom:20px}
+.trx-detail .td-rows{background:#f8f8fa;border-radius:12px;padding:14px}
+.trx-detail .td-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px}
+.trx-detail .td-row:last-child{border-bottom:none}
+.trx-detail .td-row .tdr-label{color:#888}
+.trx-detail .td-row .tdr-val{color:#333;font-weight:500}
 
-/* Rate Modal */
-.rate-big{text-align:center;padding:16px 0 8px}
-.rate-big .rb-val{font-size:48px;font-weight:700;color:var(--primary)}
-.rate-big .rb-suffix{font-size:18px;color:#999;margin-left:2px}
-.rate-hint{
-  background:#f8f7ff;border-radius:12px;padding:14px;
-  margin:12px 0 16px;font-size:12px;color:#666;line-height:1.8;
-}
-.rate-hint span{color:var(--primary);font-weight:600}
-.rate-history-title{font-size:13px;color:#888;margin-bottom:8px}
-.rate-history-list{
-  background:#f8f8fa;border-radius:10px;padding:12px;
-  font-size:12px;color:#666;margin-bottom:16px;max-height:160px;overflow-y:auto;
-}
-.rate-history-item{
-  display:flex;justify-content:space-between;
-  padding:6px 0;border-bottom:1px solid #eee;
-}
-.rate-history-item:last-child{border-bottom:none}
-.rh-date{color:#999}
+/* Password Modal */
+.pwd-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.5);z-index:150;display:none;justify-content:center;align-items:center}
+.pwd-overlay.show{display:flex}
+.pwd-box{background:#fff;border-radius:20px;padding:24px;width:300px;text-align:center}
+.pwd-box h3{font-size:17px;font-weight:600;color:#333;margin-bottom:6px}
+.pwd-box .pwd-subtitle{font-size:12px;color:#999;margin-bottom:16px}
+.pwd-box .pwd-input{width:100%;padding:14px 16px;border:2px solid #e8e8e8;border-radius:12px;font-size:18px;text-align:center;letter-spacing:8px;-webkit-text-security:disc;transition:border-color .2s}
+.pwd-box .pwd-input:focus{border-color:#6C5CE7}
+.pwd-box .pwd-input.error{border-color:#e17055;animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pwd-box .pwd-error{font-size:12px;color:#e17055;margin-top:8px;display:none}
+.pwd-box .pwd-error.show{display:block}
+.pwd-box .pwd-btns{display:flex;gap:10px;margin-top:18px}
+.pwd-box .pwd-cancel{flex:1;padding:12px;border-radius:10px;background:#f0f0f5;font-size:14px;color:#666;font-weight:500}
+.pwd-box .pwd-confirm{flex:1;padding:12px;border-radius:10px;background:linear-gradient(135deg,#6C5CE7,#a29bfe);font-size:14px;color:#fff;font-weight:600}
+.pwd-box .pwd-cancel:active,.pwd-box .pwd-confirm:active{opacity:.85}
 
-/* Transaction Detail Modal */
-.trx-detail{padding:12px 0}
-.td-icon-area{text-align:center;margin-bottom:12px}
-.td-type-icon{
-  width:60px;height:60px;border-radius:50%;margin:0 auto;
-  display:flex;align-items:center;justify-content:center;font-size:30px;
-}
-.td-amount{text-align:center;font-size:30px;font-weight:700;margin-bottom:4px}
-.td-type-name{text-align:center;font-size:13px;color:#888;margin-bottom:16px}
-.td-rows{
-  background:#f8f8fa;border-radius:12px;padding:14px;
-}
-.td-row{
-  display:flex;justify-content:space-between;
-  padding:8px 0;border-bottom:1px solid #eee;
-  font-size:13px;
-}
-.td-row:last-child{border-bottom:none}
-.tdr-label{color:#888}
-.tdr-val{color:#333;font-weight:500}
+.toast{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.75);color:#fff;padding:16px 24px;border-radius:12px;font-size:14px;z-index:200;display:none;text-align:center;max-width:80%}
+.toast.show{display:block;animation:fadeInOut 2s forwards}
+@keyframes fadeInOut{0%{opacity:0}15%{opacity:1}85%{opacity:1}100%{opacity:0}}
 
-/* ========== TOAST ========== */
-.toast{
-  position:fixed;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  background:rgba(0,0,0,.75);
-  color:#fff;padding:14px 24px;border-radius:12px;
-  font-size:14px;z-index:300;
-  display:none;text-align:center;
-  pointer-events:none;
-  max-width:280px;
-}
-.toast.show{
-  display:block;
-  animation:toastAnim 2.2s forwards;
-}
-@keyframes toastAnim{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.9)}
-  12%{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  82%{opacity:1;transform:translate(-50%,-50%) scale(1)}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(.9)}
-}
+/* Install Banner */
+.install-banner{display:none;background:linear-gradient(135deg,#6C5CE7,#a29bfe);color:#fff;padding:12px 16px;align-items:center;gap:12px;flex-shrink:0}
+.install-banner.show{display:flex}
+.install-banner .ib-text{flex:1;font-size:13px}
+.install-banner .ib-btn{padding:6px 16px;border-radius:16px;background:#fff;color:#6C5CE7;font-size:13px;font-weight:600}
+.install-banner .ib-close{font-size:18px;opacity:.7;padding:4px}
 
-/* ========== INPUT MODAL ========== */
-.input-modal-overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.5);
-  z-index:100;
-  display:none;
-  align-items:center;
-  justify-content:center;
-}
-.input-modal-overlay.show{display:flex}
-.input-modal{
-  background:#fff;border-radius:16px;
-  padding:24px;width:300px;
-  animation:scaleIn .2s ease;
-}
-.input-modal h3{font-size:16px;color:#333;margin-bottom:16px;text-align:center}
-.input-modal input{
-  width:100%;padding:12px 14px;
-  border:1px solid #ddd;border-radius:10px;
-  font-size:15px;margin-bottom:16px;
-}
-.input-modal input:focus{border-color:var(--primary)}
-.input-modal-btns{display:flex;gap:10px}
-.input-modal-btns button{
-  flex:1;padding:12px;border-radius:10px;font-size:14px;font-weight:500;
-}
-.btn-cancel{background:#f0f0f5;color:#666}
-.btn-confirm{background:var(--primary);color:#fff}
-
-/* ========== SPLASH SCREEN ========== */
-.splash-screen{
-  position:fixed;inset:0;
-  background:linear-gradient(135deg,var(--primary),var(--primary-light));
-  z-index:999;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  transition:opacity .5s ease;
-}
-.splash-screen.hide{opacity:0;pointer-events:none}
-.splash-icon{font-size:72px;margin-bottom:16px;animation:bounceIn 1s ease}
-.splash-title{font-size:28px;font-weight:700;color:#fff;margin-bottom:6px}
-.splash-sub{font-size:13px;color:rgba(255,255,255,.7)}
-@keyframes bounceIn{
-  0%{transform:scale(0);opacity:0}
-  60%{transform:scale(1.1)}
-  100%{transform:scale(1);opacity:1}
-}
-
-/* ========== EMPTY STATE ========== */
-.empty-state{
-  text-align:center;padding:40px 20px;
-  color:#ccc;font-size:14px;
-}
-.empty-state .es-icon{font-size:48px;margin-bottom:12px;opacity:.5}
+/* Scrollbar */
+::-webkit-scrollbar{width:0;height:0}
 </style>
 </head>
 <body>
+<div id="app">
+  <div class="status-bar"></div>
+  <div class="toast" id="toast"></div>
 
-<!-- Splash Screen -->
-<div class="splash-screen" id="splash">
-  <div class="splash-icon">🏦</div>
-  <div class="splash-title">家庭银行</div>
-  <div class="splash-sub">小明的储蓄罐</div>
-</div>
-
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
-<!-- Input Modal (通用输入弹窗) -->
-<div class="input-modal-overlay" id="inputModal">
-  <div class="input-modal">
-    <h3 id="inputModalTitle">输入名称</h3>
-    <input type="text" id="inputModalField" placeholder="请输入" />
-    <div class="input-modal-btns">
-      <button class="btn-cancel" onclick="closeInputModal()">取消</button>
-      <button class="btn-confirm" id="inputModalConfirm" onclick="confirmInputModal()">确定</button>
-    </div>
-  </div>
-</div>
-
-<!-- App Container -->
-<div class="app-container" id="app">
-
-  <!-- Status Bar -->
-  <div class="status-bar">
-    <span class="time" id="statusTime">09:00</span>
-    <div class="icons">
-      <span class="sbi">📶</span>
-      <span class="sbi">🔋</span>
+  <!-- Password Modal -->
+  <div class="pwd-overlay" id="pwdModal">
+    <div class="pwd-box">
+      <h3 id="pwdTitle">🔒 验证密码</h3>
+      <div class="pwd-subtitle" id="pwdSubtitle">请输入管理密码以确认操作</div>
+      <input class="pwd-input" id="pwdInput" type="password" placeholder="请输入密码" maxlength="20">
+      <div class="pwd-error" id="pwdError">❌ 密码错误，请重试</div>
+      <div class="pwd-btns">
+        <button class="pwd-cancel" id="pwdCancel">取消</button>
+        <button class="pwd-confirm" id="pwdConfirm">确认</button>
+      </div>
     </div>
   </div>
 
@@ -603,1248 +294,1378 @@ html,body{height:100%;overflow:hidden;background:#f5f6fa}
   <div class="view active" id="view-home">
     <div class="page-header">
       <h1 id="bankTitle">🏦 家庭银行</h1>
-      <div class="subtitle">
-        <span id="childSubtitle" class="subtitle-txt" onclick="editChildName()">小明的储蓄罐</span>
-        <span style="color:#ddd">✏️</span>
-      </div>
+      <div class="subtitle" id="childSubtitle">小明的储蓄罐 ✏️</div>
     </div>
-    <div class="app-content">
-      <div class="balance-card">
-        <div class="label">可用余额</div>
-        <div class="amount"><span id="homeBalance">0.00</span><span class="unit">元</span></div>
-        <div class="balance-stats">
-          <div class="stat"><div class="stat-label">累计存入</div><div class="stat-val" id="homeTotalDeposit">0.00</div></div>
-          <div class="stat"><div class="stat-label">累计支出</div><div class="stat-val" id="homeTotalExpense">0.00</div></div>
-          <div class="stat"><div class="stat-label">累计利息</div><div class="stat-val" id="homeTotalInterest">0.00</div></div>
-        </div>
-      </div>
-
-      <div class="quick-actions">
-        <div class="quick-btn" onclick="openRecord('deposit')"><div class="icon-circle icon-green">💰</div><div class="btn-label">记录存入</div></div>
-        <div class="quick-btn" onclick="openRecord('expense')"><div class="icon-circle icon-orange">🛒</div><div class="btn-label">记录消费</div></div>
-        <div class="quick-btn" onclick="openRateModal()"><div class="icon-circle icon-purple">💹</div><div class="btn-label">利率设置</div></div>
-      </div>
-
-      <div class="section-title">今日概览</div>
-      <div class="today-summary">
-        <div class="summary-item"><div class="s-label">今日存入</div><div class="s-val green" id="todayIncome">+0.00</div></div>
-        <div class="summary-item"><div class="s-label">今日支出</div><div class="s-val orange" id="todayExpense">-0.00</div></div>
-      </div>
-
-      <div class="section-title">最近流水</div>
-      <div class="recent-list" id="recentList">
-        <div class="empty-state"><div class="es-icon">📭</div>暂无流水记录</div>
-      </div>
+    <div class="app-content" id="homeContent">
+      <!-- Dynamic content -->
     </div>
   </div>
 
   <!-- ===== TRANSACTIONS VIEW ===== -->
   <div class="view" id="view-transactions">
-    <div class="page-header"><h1>📋 流水明细</h1></div>
-    <div class="filter-tabs">
-      <div class="filter-tab active" data-filter="all" onclick="filterTrx(this)">全部</div>
-      <div class="filter-tab" data-filter="deposit" onclick="filterTrx(this)">存入</div>
-      <div class="filter-tab" data-filter="expense" onclick="filterTrx(this)">支出</div>
-      <div class="filter-tab" data-filter="interest" onclick="filterTrx(this)">利息</div>
-    </div>
-    <div class="date-filter">
-      <div class="date-chip active" data-range="today" onclick="filterDate(this)">今天</div>
-      <div class="date-chip" data-range="week" onclick="filterDate(this)">本周</div>
-      <div class="date-chip" data-range="month" onclick="filterDate(this)">本月</div>
-      <div class="date-chip" data-range="all" onclick="filterDate(this)">全部</div>
-    </div>
-    <div class="app-content">
-      <div class="trx-list" id="trxList">
-        <div class="empty-state"><div class="es-icon">📭</div>暂无流水记录</div>
-      </div>
-    </div>
-    <div class="trx-summary-bar">
-      <div class="ts-item"><div class="ts-label">存入</div><div class="ts-val" id="tsIncome" style="color:var(--green)">0.00</div></div>
-      <div class="ts-item"><div class="ts-label">支出</div><div class="ts-val" id="tsExpense" style="color:var(--orange)">0.00</div></div>
-      <div class="ts-item"><div class="ts-label">利息</div><div class="ts-val" id="tsInterest" style="color:var(--primary)">0.00</div></div>
-    </div>
+    <div class="page-header"><h1>流水明细</h1></div>
+    <div class="filter-tabs" id="filterTabs"></div>
+    <div class="date-filter" id="dateFilter"></div>
+    <div class="app-content" id="trxContent"></div>
+    <div class="trx-summary-bar" id="trxSummary"></div>
   </div>
 
   <!-- ===== RULES VIEW ===== -->
   <div class="view" id="view-rules">
     <div class="rules-header">
-      <div class="rh-top">
-        <button class="back-btn" onclick="switchTab('home')">←</button>
-        <h1>📋 规则管理</h1>
-      </div>
-      <p>配资规则与利率设置</p>
+      <h1>⚙️ 规则管理</h1>
+      <p>管理配资规则与存入来源</p>
     </div>
-    <div class="app-content">
-      <div class="interest-card">
-        <div class="ic-label">当前年利率</div>
-        <div class="ic-rate" id="ruleRateDisplay">3.0%</div>
-        <div class="ic-sub" id="ruleDailyRateDisplay">日利率 0.008219% · 每日复利计息</div>
-        <div class="ic-total">
-          <div><div class="it-label">累计利息</div><div class="it-val" id="ruleTotalInterest">0.00元</div></div>
-          <div><div class="it-label">余额</div><div class="it-val" id="ruleBalanceDisplay">0.00元</div></div>
-        </div>
-        <button class="change-rate-btn" onclick="openRateModal()">修改利率</button>
-      </div>
-
-      <div class="rule-section"><div class="rule-section-title">存入来源</div></div>
-      <div style="padding:0 16px;" id="sourcesContainer"></div>
-      <button class="add-btn" onclick="addSource()">+ 新增存入来源</button>
-
-      <div class="rule-section"><div class="rule-section-title">消费配资规则</div></div>
-      <div style="padding:0 16px;" id="rulesContainer"></div>
-      <button class="add-btn" onclick="addRule()">+ 新增配资规则</button>
-      <div style="height:20px;"></div>
-    </div>
+    <div class="app-content" id="rulesContent"></div>
   </div>
 
   <!-- ===== PROFILE VIEW ===== -->
   <div class="view" id="view-profile">
     <div class="profile-header">
-      <div class="profile-avatar" id="profileAvatar">🏦</div>
-      <div class="profile-info"><h2>家庭银行</h2><p>管理子女账户与系统设置</p></div>
+      <div class="profile-avatar" id="profileAvatar">👤</div>
+      <div class="profile-info">
+        <h2 id="profileName">家长</h2>
+        <p id="profileDesc">管理员</p>
+      </div>
     </div>
-    <div class="app-content">
-      <div class="section-title" style="padding-left:16px;">子女账户</div>
-      <div class="child-list">
-        <div class="child-card" onclick="editChildName()">
-          <div class="cc-avatar" style="background:var(--primary);" id="ccAvatar">小</div>
-          <div class="cc-info">
-            <div class="cc-name" id="ccName">小明</div>
-            <div class="cc-balance">余额 ¥<span id="ccBalance">0.00</span></div>
-          </div>
-          <div class="cc-arrow">✏️</div>
-        </div>
-      </div>
-
-      <div class="menu-section">
-        <div class="menu-section-title">财务管理</div>
-        <div class="menu-item" onclick="switchTab('rules')">
-          <div class="mi-icon icon-purple">📋</div>
-          <div class="mi-label">配资规则管理</div>
-          <div class="mi-value" id="ruleCountVal">4条</div>
-          <div class="mi-arrow">›</div>
-        </div>
-        <div class="menu-item" onclick="openRateModal()">
-          <div class="mi-icon icon-orange">💹</div>
-          <div class="mi-label">利率设置</div>
-          <div class="mi-value" id="profileRateVal">3.0%</div>
-          <div class="mi-arrow">›</div>
-        </div>
-      </div>
-
-      <div class="menu-section">
-        <div class="menu-section-title">系统设置</div>
-        <div class="menu-item" onclick="editBankName()">
-          <div class="mi-icon" style="background:#f0f0f5;">🏦</div>
-          <div class="mi-label">银行名称</div>
-          <div class="mi-value" id="bankNameValue">家庭银行</div>
-          <div class="mi-arrow">›</div>
-        </div>
-      </div>
-
-      <div class="dev-info">郑土土 · 个人开发者</div>
-    </div>
+    <div class="app-content" id="profileContent"></div>
   </div>
 
   <!-- ===== TAB BAR ===== -->
   <div class="tab-bar">
-    <div class="tab-item active" data-tab="home" onclick="switchTab('home')">
+    <div class="tab-item active" data-tab="home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg>
       <span>首页</span>
     </div>
-    <div class="tab-item" data-tab="transactions" onclick="switchTab('transactions')">
+    <div class="tab-item" data-tab="transactions">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
       <span>流水</span>
     </div>
-    <div class="tab-center" onclick="openRecord('deposit')">
-      <div class="tab-center-btn">
-        <svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14" stroke="#fff" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>
-      </div>
+    <div class="tab-center" id="tabRecord">
+      <div class="tab-center-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg></div>
       <span>记账</span>
     </div>
-    <div class="tab-item" data-tab="rules" onclick="switchTab('rules')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    <div class="tab-item" data-tab="rules">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
       <span>规则</span>
     </div>
-    <div class="tab-item" data-tab="profile" onclick="switchTab('profile')">
+    <div class="tab-item" data-tab="profile">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
       <span>我的</span>
     </div>
   </div>
-</div>
 
-<!-- ===== RECORD MODAL ===== -->
-<div class="modal-overlay" id="recordModal">
-  <div class="modal-sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header"><h2>记账</h2><button class="close-btn" onclick="closeRecord()">✕</button></div>
-    <div class="sheet-body">
-      <div class="record-type-toggle">
-        <div class="record-type-btn active" id="toggleDeposit" onclick="toggleRecordType('deposit')">💰 存入</div>
-        <div class="record-type-btn" id="toggleExpense" onclick="toggleRecordType('expense')">🛒 消费</div>
-      </div>
-      <div class="amount-input-area">
-        <div class="amount-display"><span class="prefix">¥</span><span class="val-lite" id="amountValue">0.00</span></div>
-      </div>
+  <!-- Install Banner -->
+  <div class="install-banner" id="installBanner">
+    <span class="ib-text">📱 添加到主屏幕，体验更佳</span>
+    <button class="ib-btn" id="installBtn">安装</button>
+    <button class="ib-close" id="installClose">✕</button>
+  </div>
 
-      <!-- Deposit Form -->
-      <div id="depositForm">
-        <div class="form-group">
-          <label class="form-label">存入来源</label>
-          <select class="form-select" id="depositSource"></select>
+  <!-- ===== RECORD MODAL ===== -->
+  <div class="modal-overlay" id="recordModal">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header"><h2>📝 记账</h2><button class="close-btn" id="recordClose">✕</button></div>
+      <div class="sheet-body">
+        <div class="record-type-toggle">
+          <div class="record-type-btn active" id="toggleDeposit">💰 存入</div>
+          <div class="record-type-btn" id="toggleExpense">🛒 消费</div>
         </div>
-        <div class="form-group">
-          <label class="form-label">备注（选填）</label>
-          <input class="form-input" id="depositNote" placeholder="如：洗碗、整理房间" maxlength="50" />
+        <div class="amount-input-area">
+          <div class="amount-display"><span class="prefix">¥</span><span id="amountValue">0.00</span></div>
+          <div class="quick-amounts">
+            <button class="quick-amount-btn" data-amount="2">2元</button>
+            <button class="quick-amount-btn" data-amount="5">5元</button>
+            <button class="quick-amount-btn" data-amount="10">10元</button>
+            <button class="quick-amount-btn" data-amount="20">20元</button>
+          </div>
         </div>
-        <div class="quick-amounts">
-          <button class="quick-amt" onclick="setAmount(2)">2元</button>
-          <button class="quick-amt" onclick="setAmount(5)">5元</button>
-          <button class="quick-amt" onclick="setAmount(10)">10元</button>
-          <button class="quick-amt" onclick="setAmount(20)">20元</button>
+        <!-- Deposit Form -->
+        <div id="depositForm">
+          <div class="form-group"><label class="form-label">存入来源</label><select class="form-select" id="depositSource"></select></div>
+          <div class="form-group"><label class="form-label">备注</label><input class="form-input" id="depositRemark" placeholder="选填，如：洗碗奖励"></div>
         </div>
-        <button class="submit-btn" onclick="submitRecord('deposit')">确认存入</button>
-      </div>
-
-      <!-- Expense Form -->
-      <div id="expenseForm" style="display:none;">
-        <div class="form-group">
-          <label class="form-label">消费类型</label>
-          <select class="form-select" id="expenseType" onchange="updateFundingPreview()"></select>
+        <!-- Expense Form -->
+        <div id="expenseForm" style="display:none">
+          <div class="form-group"><label class="form-label">消费类型</label><select class="form-select" id="expenseType"></select></div>
+          <div class="form-group"><label class="form-label">用途说明</label><input class="form-input" id="expenseRemark" placeholder="选填，如：买零食"></div>
+          <div class="funding-preview" id="fundingPreview" style="display:none">
+            <div class="fp-title">配资预览</div>
+            <div class="fp-row"><span>消费总金额</span><span class="fp-val" id="fpTotal">¥0.00</span></div>
+            <div class="fp-row"><span>个人承担</span><span class="fp-val personal" id="fpPersonal">¥0.00</span></div>
+            <div class="fp-row"><span>银行配资</span><span class="fp-val bank" id="fpBank">¥0.00</span></div>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">消费总金额</label>
-          <input class="form-input" type="number" inputmode="decimal" placeholder="输入消费总金额" id="expenseTotal" oninput="updateFundingPreview()" />
-        </div>
-        <div class="funding-preview">
-          <div class="fp-title">配资预览</div>
-          <div class="fp-row"><span>消费总金额</span><span class="fp-val" id="fpTotal">¥0.00</span></div>
-          <div class="fp-row"><span>个人承担（从存款扣）</span><span class="fp-val personal" id="fpPersonal">¥0.00</span></div>
-          <div class="fp-row"><span>银行配资（家长补贴）</span><span class="fp-val bank" id="fpBank">¥0.00</span></div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">用途说明（选填）</label>
-          <input class="form-input" id="expenseNote" placeholder="如：买零食、买书" maxlength="50" />
-        </div>
-        <button class="submit-btn" onclick="submitRecord('expense')">确认消费</button>
+        <button class="submit-btn" id="submitRecord">确认</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ===== SOURCE EDITOR MODAL ===== -->
-<div class="modal-overlay" id="sourceEditModal">
-  <div class="modal-sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header"><h2 id="sourceEditTitle">新增存入来源</h2><button class="close-btn" onclick="closeModal('sourceEditModal')">✕</button></div>
-    <div class="sheet-body">
-      <div class="form-group">
-        <label class="form-label">图标</label>
-        <input class="form-input" id="sourceEditIcon" placeholder="输入emoji，如 💰" maxlength="2" />
+  <!-- ===== SOURCE EDIT MODAL ===== -->
+  <div class="modal-overlay" id="sourceEditModal">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header"><h2 id="sourceEditTitle">新增存入来源</h2><button class="close-btn" id="sourceEditClose">✕</button></div>
+      <div class="sheet-body">
+        <div class="form-group"><label class="form-label">图标</label><input class="form-input" id="sourceEditIcon" placeholder="输入emoji，如 💰" maxlength="2"></div>
+        <div class="form-group"><label class="form-label">来源名称</label><input class="form-input" id="sourceEditName" placeholder="如：任务报酬"></div>
+        <p style="font-size:11px;color:#999;margin:8px 0 16px;">💡 修改名称后，历史流水中该来源名称会同步更新</p>
+        <button class="submit-btn" id="saveSourceBtn">保存</button>
       </div>
-      <div class="form-group">
-        <label class="form-label">来源名称</label>
-        <input class="form-input" id="sourceEditName" placeholder="如：任务报酬" maxlength="20" />
-      </div>
-      <p class="hint-text">💡 修改名称后，历史流水中该来源名称会同步更新</p>
-      <button class="submit-btn" id="sourceSaveBtn" onclick="saveSource()">保存</button>
     </div>
   </div>
-</div>
 
-<!-- ===== RULE EDITOR MODAL ===== -->
-<div class="modal-overlay" id="ruleEditModal">
-  <div class="modal-sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header"><h2 id="ruleEditTitle">新增配资规则</h2><button class="close-btn" onclick="closeModal('ruleEditModal')">✕</button></div>
-    <div class="sheet-body">
-      <div class="form-group">
-        <label class="form-label">图标</label>
-        <input class="form-input" id="ruleEditIcon" placeholder="输入emoji，如 🛒" maxlength="2" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">消费类型名称</label>
-        <input class="form-input" id="ruleEditName" placeholder="如：自己喜欢·父母不同意" maxlength="30" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">类型描述</label>
-        <input class="form-input" id="ruleEditDesc" placeholder="简要描述该消费类型" maxlength="60" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">个人承担比例</label>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <input type="range" class="rate-slider" min="0" max="100" step="5" value="50" id="ruleEditRatio" oninput="updateRuleEditPreview(this.value)" style="flex:1;" />
-          <span id="ruleEditRatioVal" style="font-size:16px;font-weight:600;color:var(--orange);width:40px;text-align:right;">50</span><span style="color:#999;">%</span>
+  <!-- ===== RULE EDIT MODAL ===== -->
+  <div class="modal-overlay" id="ruleEditModal">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header"><h2 id="ruleEditTitle">新增配资规则</h2><button class="close-btn" id="ruleEditClose">✕</button></div>
+      <div class="sheet-body">
+        <div class="form-group"><label class="form-label">图标</label><input class="form-input" id="ruleEditIcon" placeholder="输入emoji，如 🛒" maxlength="2"></div>
+        <div class="form-group"><label class="form-label">消费类型名称</label><input class="form-input" id="ruleEditName" placeholder="如：自己喜欢·父母不同意"></div>
+        <div class="form-group"><label class="form-label">类型描述</label><input class="form-input" id="ruleEditDesc" placeholder="简要描述该消费类型"></div>
+        <div class="form-group">
+          <label class="form-label">个人承担比例</label>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <input type="range" class="rate-slider" min="0" max="100" step="5" value="50" id="ruleEditRatio" style="flex:1;">
+            <span id="ruleEditRatioVal" style="font-size:16px;font-weight:600;color:#e17055;width:36px;text-align:right;">50</span><span style="color:#999;">%</span>
+          </div>
         </div>
+        <div style="background:#f8f7ff;border-radius:10px;padding:12px;margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;font-size:13px;"><span>个人承担</span><span style="color:#e17055;font-weight:600;" id="ruleEditRatioPct">50%</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;margin-top:4px;"><span>银行配资</span><span style="color:#00b894;font-weight:600;" id="ruleEditBankPct">50%</span></div>
+        </div>
+        <p style="font-size:11px;color:#999;margin-bottom:16px;">💡 修改名称或比例后，仅影响新消费；历史流水不变</p>
+        <button class="submit-btn" id="saveRuleBtn">保存</button>
       </div>
-      <div class="ratio-display">
-        <div class="rd-row"><span>个人承担</span><span class="rd-val rd-p" id="ruleEditRatioPct">50%</span></div>
-        <div class="rd-row"><span>银行配资</span><span class="rd-val rd-b" id="ruleEditBankPct">50%</span></div>
-      </div>
-      <p class="hint-text">💡 修改名称后，历史流水中该类型信息会同步更新。比例仅影响新消费。</p>
-      <button class="submit-btn" id="ruleSaveBtn" onclick="saveRule()">保存</button>
     </div>
   </div>
-</div>
 
-<!-- ===== RATE EDITOR MODAL ===== -->
-<div class="modal-overlay" id="rateModal">
-  <div class="modal-sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header"><h2>利率设置</h2><button class="close-btn" onclick="closeModal('rateModal')">✕</button></div>
-    <div class="sheet-body" style="padding:0 20px 30px;">
-      <div class="rate-big">
-        <span class="rb-val" id="rateValue">3.0</span><span class="rb-suffix">% / 年</span>
+  <!-- ===== RATE EDIT MODAL ===== -->
+  <div class="modal-overlay" id="rateModal">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header"><h2>利率设置</h2><button class="close-btn" id="rateClose">✕</button></div>
+      <div class="sheet-body">
+        <div style="text-align:center;padding:20px 0;"><span id="rateValue" style="font-size:40px;font-weight:700;color:#6C5CE7;">3.0</span><span style="font-size:18px;color:#999;">% / 年</span></div>
+        <div style="padding:0 0 20px;"><input type="range" class="rate-slider" min="0" max="20" step="0.1" value="3.0" id="rateSlider"></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:#999;margin:-12px 0 20px;"><span>0%</span><span>10%</span><span>20%</span></div>
+        <div style="background:#f8f7ff;border-radius:12px;padding:14px;margin-bottom:16px;font-size:12px;color:#666;line-height:1.6;">
+          💡 年利率 <span id="rateCalcDisplay">3.0%</span> 对应日利率 <span id="dailyRateDisplay">0.008219%</span><br>
+          每日利息约 <span id="dailyInterestDisplay">0.02</span> 元<br>
+          一年后利息约 <span id="yearlyInterestDisplay">7.80</span> 元（复利）
+        </div>
+        <div style="font-size:13px;color:#888;margin-bottom:8px;">利率变更记录</div>
+        <div id="rateLogList" style="background:#f8f8fa;border-radius:10px;padding:12px;font-size:12px;color:#666;margin-bottom:16px;"></div>
+        <button class="submit-btn" id="saveRateBtn">保存利率</button>
       </div>
-      <div style="padding:0 0 4px;">
-        <input type="range" class="rate-slider" min="0" max="20" step="0.1" value="3.0" id="rateSlider" oninput="updateRateDisplay(this.value)" />
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:#999;margin-bottom:20px;">
-        <span>0%</span><span>5%</span><span>10%</span><span>15%</span><span>20%</span>
-      </div>
-      <div class="rate-hint" id="rateHint">
-        💡 年利率 <span id="rateCalcDisplay">3.0%</span> 对应日利率 <span id="dailyRateDisplay">0.008219%</span><br/>
-        当前余额<span id="rateBalanceHint">0.00</span>元，每日利息约 <span id="dailyInterestDisplay">0.00</span> 元<br/>
-        一年后利息约 <span id="yearlyInterestDisplay">0.00</span> 元（复利）
-      </div>
-      <div class="rate-history-title">利率变更记录</div>
-      <div class="rate-history-list" id="rateHistoryList">
-        <div style="color:#bbb;text-align:center;">暂无记录</div>
-      </div>
-      <button class="submit-btn" onclick="saveRate()">保存利率</button>
     </div>
   </div>
-</div>
 
-<!-- ===== TRANSACTION DETAIL MODAL ===== -->
-<div class="modal-overlay" id="trxDetailModal">
-  <div class="modal-sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-header"><h2>流水详情</h2><button class="close-btn" onclick="closeModal('trxDetailModal')">✕</button></div>
-    <div class="trx-detail" id="trxDetailContent"></div>
+  <!-- ===== TRX DETAIL MODAL ===== -->
+  <div class="modal-overlay" id="trxDetailModal">
+    <div class="modal-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header"><h2>流水详情</h2><button class="close-btn" id="trxDetailClose">✕</button></div>
+      <div class="trx-detail" id="trxDetailContent"></div>
+    </div>
   </div>
 </div>
 
 <script>
-// ========== STATE ==========
-var currentTab = 'home';
-var currentRecordType = 'deposit';
-var currentAmount = 0;
-var currentTrxFilter = 'all';
-var currentDateFilter = 'today';
-var editingSourceId = null;
-var editingRuleId = null;
-var inputModalCallback = null;
+// ============================================================
+// DATABASE LAYER (IndexedDB)
+// ============================================================
+const DB_NAME = 'FamilyBankDB';
+const DB_VERSION = 1;
+let db = null;
 
-// ========== DATA KEYS ==========
-var K = {
-  CHILD_NAME: 'hb_child_name',
-  SOURCES: 'hb_sources',
-  RULES: 'hb_rules',
-  TRANSACTIONS: 'hb_transactions',
-  RATE: 'hb_rate',
-  RATE_HISTORY: 'hb_rate_history',
-  LAST_INTEREST_DATE: 'hb_last_interest_date',
-  BALANCE: 'hb_balance',
-  TOTAL_DEPOSIT: 'hb_total_deposit',
-  TOTAL_EXPENSE: 'hb_total_expense',
-  TOTAL_INTEREST: 'hb_total_interest',
-  BANK_NAME: 'hb_bank_name',
-  NEXT_SOURCE_ID: 'hb_next_source_id',
-  NEXT_RULE_ID: 'hb_next_rule_id'
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('child')) {
+        const s = d.createObjectStore('child', {keyPath:'id'});
+        s.put({id:1, name:'小明', subtitle:'小明的储蓄罐', balance:0, total_deposit:0, total_expense:0, total_interest:0, last_interest_date:'', created_at:new Date().toISOString()});
+      }
+      if (!d.objectStoreNames.contains('deposit_source')) {
+        const s = d.createObjectStore('deposit_source', {keyPath:'id', autoIncrement:true});
+        s.put({icon:'🧹', name:'任务报酬', is_preset:1, sort_order:1});
+        s.put({icon:'💵', name:'零花钱', is_preset:1, sort_order:2});
+        s.put({icon:'🧧', name:'压岁钱', is_preset:1, sort_order:3});
+        s.put({icon:'📌', name:'其他', is_preset:1, sort_order:4});
+      }
+      if (!d.objectStoreNames.contains('funding_rule')) {
+        const s = d.createObjectStore('funding_rule', {keyPath:'id', autoIncrement:true});
+        s.put({icon:'🍬', name:'自己喜欢·父母不同意', description:'孩子想要但家长不认可的消费，如零食、玩具', personal_ratio:0.9, bank_ratio:0.1, is_preset:1, is_active:1, sort_order:1});
+        s.put({icon:'🎨', name:'有利提升·父母不同意', description:'对孩子成长有益但家长暂未认可的消费', personal_ratio:0.5, bank_ratio:0.5, is_preset:1, is_active:1, sort_order:2});
+        s.put({icon:'📚', name:'双方认可·有价值', description:'孩子和家长都认为有价值的消费', personal_ratio:0.1, bank_ratio:0.9, is_preset:1, is_active:1, sort_order:3});
+      }
+      if (!d.objectStoreNames.contains('transaction')) {
+        const s = d.createObjectStore('transaction', {keyPath:'id', autoIncrement:true});
+        s.createIndex('type', 'type', {unique:false});
+        s.createIndex('created_at', 'created_at', {unique:false});
+      }
+      if (!d.objectStoreNames.contains('app_config')) {
+        const s = d.createObjectStore('app_config', {keyPath:'key'});
+        s.put({key:'annual_rate', value:'0.03', updated_at:new Date().toISOString()});
+        s.put({key:'bank_name', value:'家庭银行', updated_at:new Date().toISOString()});
+        s.put({key:'admin_pwd', value:'admin', updated_at:new Date().toISOString()});
+      }
+      if (!d.objectStoreNames.contains('rate_log')) {
+        d.createObjectStore('rate_log', {keyPath:'id', autoIncrement:true});
+      }
+    };
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror = e => reject(e.target.error);
+  });
+}
+
+function dbGet(store, key) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const s = tx.objectStore(store);
+    const req = s.get(key);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbGetAll(store) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbPut(store, data) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).put(data);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbAdd(store, data) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readwrite');
+    const req = tx.objectStore(store).add(data);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbGetByIndex(store, indexName, value) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const idx = tx.objectStore(store).index(indexName);
+    const req = idx.getAll(value);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function dbGetByRange(store, indexName, lower, upper) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, 'readonly');
+    const idx = tx.objectStore(store).index(indexName);
+    const range = IDBKeyRange.bound(lower, upper);
+    const req = idx.getAll(range);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+// ============================================================
+// APP STATE
+// ============================================================
+const state = {
+  child: null,
+  sources: [],
+  rules: [],
+  transactions: [],
+  config: {},
+  rateLogs: [],
+  currentTab: 'home',
+  trxFilter: 'all',
+  trxDateFilter: 'all',
+  editingSourceId: null,
+  editingRuleId: null,
+  recordType: 'deposit',
+  currentAmount: '0'
 };
 
-// ========== UTILS ==========
-function $id(id){return document.getElementById(id)}
-function fmt(n){return parseFloat(n||0).toFixed(2)}
-function fmtYMD(d){return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日'}
-function fmtHM(d){
-  var h=d.getHours(),m=d.getMinutes();
-  return (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+// ============================================================
+// UTILITY
+// ============================================================
+function fmt(n) { return parseFloat(n||0).toFixed(2); }
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
-function toDateStr(d){var y=d.getFullYear(),m=d.getMonth()+1,dd=d.getDate();return y+'-'+(m<10?'0':'')+m+'-'+(dd<10?'0':'')+dd}
-function todayStr(){return toDateStr(new Date())}
-function isSameDay(d1,d2){
-  return d1.slice(0,10)===d2.slice(0,10);
+function fmtTime(iso) {
+  const d = new Date(iso);
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
-function daysBetween(d1,d2){
-  var a=parseLocalDate(d1),b=parseLocalDate(d2);
-  return Math.round((b-a)/86400000);
-}
-function parseLocalDate(s){
-  var p=s.split('-');return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
-}
-function newId(key){
-  var id=parseInt(localStorage.getItem(key)||'1');
-  localStorage.setItem(key,String(id+1));
-  return id;
-}
-function getChildName(){return localStorage.getItem(K.CHILD_NAME)||'小明'}
-function getBankName(){return localStorage.getItem(K.BANK_NAME)||'家庭银行'}
+function fmtDateTime(iso) { return fmtDate(iso) + ' ' + fmtTime(iso); }
+function today() { return fmtDate(new Date().toISOString()); }
+function getMonthStart(d) { return new Date(d.getFullYear(), d.getMonth(), 1).toISOString(); }
+function getPrevMonthStart(d) { const p = new Date(d.getFullYear(), d.getMonth()-1, 1); return p.toISOString(); }
+function getPrevMonthEnd(d) { return new Date(d.getFullYear(), d.getMonth(), 0, 23, 59, 59).toISOString(); }
 
-// ========== DATA INIT ==========
-function initData(){
-  if(localStorage.getItem(K.BALANCE)===null){
-    var today=todayStr();
-    localStorage.setItem(K.SOURCES,JSON.stringify([
-      {id:1,icon:'🧹',name:'任务报酬'},
-      {id:2,icon:'💵',name:'零花钱'},
-      {id:3,icon:'🧧',name:'压岁钱'},
-      {id:4,icon:'📌',name:'其他'}
-    ]));
-    localStorage.setItem(K.RULES,JSON.stringify([
-      {id:1,icon:'🍬',name:'自己喜欢·父母不同意',desc:'孩子想要但家长不认可的消费，如零食、玩具',personal:90,bank:10},
-      {id:2,icon:'🎨',name:'有利提升·父母不同意',desc:'对孩子成长有益但家长暂未认可的消费',personal:50,bank:50},
-      {id:3,icon:'📚',name:'双方认可·有价值',desc:'孩子和家长都认为有价值的消费',personal:10,bank:90},
-      {id:4,icon:'🎓',name:'教育投资',desc:'纯教育类投入，如学费、培训费',personal:0,bank:100}
-    ]));
-    localStorage.setItem(K.RATE,'3.0');
-    localStorage.setItem(K.BALANCE,'0');
-    localStorage.setItem(K.TOTAL_DEPOSIT,'0');
-    localStorage.setItem(K.TOTAL_EXPENSE,'0');
-    localStorage.setItem(K.TOTAL_INTEREST,'0');
-    localStorage.setItem(K.CHILD_NAME,'小明');
-    localStorage.setItem(K.LAST_INTEREST_DATE,today);
-    localStorage.setItem(K.BANK_NAME,'家庭银行');
-    localStorage.setItem(K.NEXT_SOURCE_ID,'5');
-    localStorage.setItem(K.NEXT_RULE_ID,'5');
-    localStorage.setItem(K.TRANSACTIONS,'[]');
-    localStorage.setItem(K.RATE_HISTORY,JSON.stringify([{
-      date:today,old_rate:3.0,new_rate:3.0,note:'初始设置'
-    }]));
-  }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.remove('show'); void t.offsetWidth; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-// ========== INTEREST CALCULATION ==========
-function calcInterest(){
-  var today=todayStr();
-  var lastDate=localStorage.getItem(K.LAST_INTEREST_DATE)||today;
-  var balance=parseFloat(localStorage.getItem(K.BALANCE)||'0');
-  var rate=parseFloat(localStorage.getItem(K.RATE)||'3.0');
-  var dailyRate=rate/365/100;
-
-  if(lastDate===today) return; // already calc today
-
-  var days=daysBetween(lastDate,today);
-  if(days<1) return;
-
-  var transactions=JSON.parse(localStorage.getItem(K.TRANSACTIONS)||'[]');
-  var totalInterest=parseFloat(localStorage.getItem(K.TOTAL_INTEREST)||'0');
-
-  for(var i=0;i<days;i++){
-    var dayDate=parseLocalDate(lastDate);
-    dayDate.setDate(dayDate.getDate()+i+1);
-    var dayStr=toDateStr(dayDate);
-
-    // daily interest
-    var dayInterest=balance*dailyRate;
-    dayInterest=Math.round(dayInterest*100)/100;
-    if(dayInterest<0.005&&dayInterest>0) dayInterest=0;
-
-    if(dayInterest>0){
-      balance+=dayInterest;
-      totalInterest+=dayInterest;
-
-      transactions.push({
-        id:newId('hb_trx_id')||Date.now()+i,
-        type:'interest',
-        source_id:0,
-        source_name_snapshot:'',
-        rule_id:0,
-        rule_name_snapshot:'利息收入',
-        rule_icon_snapshot:'🏦',
-        personal_ratio_snapshot:0,
-        amount:dayInterest,
-        personal_amount:0,
-        bank_amount:dayInterest,
-        balance_after:Math.round(balance*100)/100,
-        note:'每日利息',
-        date:dayStr+'T00:00:00.000Z'
-      });
-    }
-  }
-
-  localStorage.setItem(K.BALANCE,fmt(balance));
-  localStorage.setItem(K.TOTAL_INTEREST,fmt(totalInterest));
-  localStorage.setItem(K.LAST_INTEREST_DATE,today);
-  localStorage.setItem(K.TRANSACTIONS,JSON.stringify(transactions));
-}
-
-// ========== RENDER FUNCTIONS ==========
-function renderAll(){
-  calcInterest();
-  var childName=getChildName();
-  var balance=parseFloat(localStorage.getItem(K.BALANCE)||'0');
-  var totalDeposit=parseFloat(localStorage.getItem(K.TOTAL_DEPOSIT)||'0');
-  var totalExpense=parseFloat(localStorage.getItem(K.TOTAL_EXPENSE)||'0');
-  var totalInterest=parseFloat(localStorage.getItem(K.TOTAL_INTEREST)||'0');
-  var bankName=getBankName();
-
-  // Home
-  $id('homeBalance').textContent=fmt(balance);
-  $id('homeTotalDeposit').textContent=fmt(totalDeposit);
-  $id('homeTotalExpense').textContent=fmt(totalExpense);
-  $id('homeTotalInterest').textContent=fmt(totalInterest);
-  $id('childSubtitle').textContent=childName+'的储蓄罐';
-  $id('bankTitle').textContent='🏦 '+bankName;
-
-  // Today summary
-  var today=todayStr();
-  var transactions=JSON.parse(localStorage.getItem(K.TRANSACTIONS)||'[]');
-  var todayIncome=0,todayExpense=0;
-  transactions.forEach(function(t){
-    if(isSameDay(t.date,today)){
-      if(t.type==='deposit') todayIncome+=parseFloat(t.amount);
-      if(t.type==='expense') todayExpense+=parseFloat(t.amount);
-    }
-  });
-  $id('todayIncome').textContent='+'+fmt(todayIncome);
-  $id('todayExpense').textContent='-'+fmt(todayExpense);
-
-  // Recent list
-  var recent=transactions.slice(-10).reverse();
-  var recentHTML='';
-  if(recent.length===0){
-    recentHTML='<div class="empty-state"><div class="es-icon">📭</div>暂无流水记录</div>';
-  } else {
-    recent.forEach(function(t){
-      recentHTML+=buildTrxItemHTML(t);
-    });
-  }
-  $id('recentList').innerHTML=recentHTML;
-
-  // Profile
-  $id('ccName').textContent=childName;
-  $id('ccBalance').textContent=fmt(balance);
-  $id('ccAvatar').textContent=childName.slice(0,1);
-  $id('bankNameValue').textContent=bankName;
-  var rate=parseFloat(localStorage.getItem(K.RATE)||'3.0');
-  $id('profileRateVal').textContent=rate+'%';
-
-  // Rules page
-  var dailyRate=rate/365/100;
-  var todayInterest2=balance*dailyRate;
-  $id('ruleRateDisplay').textContent=rate+'%';
-  $id('ruleDailyRateDisplay').textContent='日利率 '+(dailyRate*100).toFixed(6)+'% · 每日复利计息';
-  $id('ruleTotalInterest').textContent=fmt(totalInterest)+'元';
-  $id('ruleBalanceDisplay').textContent=fmt(balance)+'元';
-
-  // Rule count
-  var rules=JSON.parse(localStorage.getItem(K.RULES)||'[]');
-  $id('ruleCountVal').textContent=rules.length+'条';
-
-  // Render sources and rules
-  renderSourcesList();
-  renderRulesList();
-  renderTrxList();
-
-  // Splash screen update
-  $id('splash').querySelector('.splash-sub').textContent=childName+'的储蓄罐';
-}
-
-function buildTrxItemHTML(t){
-  var cls='',iconBg='',icon='',sign='',amount='';
-  if(t.type==='deposit'){
-    cls='income';sign='+';
-    iconBg='icon-green';icon=t.source_name_snapshot?t.source_name_snapshot.slice(0,1):'💰';
-  } else if(t.type==='expense'){
-    cls='expense';sign='-';
-    iconBg='icon-orange';icon=t.rule_icon_snapshot||'🛒';
-  } else {
-    cls='interest';sign='+';
-    iconBg='icon-purple';icon='🏦';
-  }
-  var d=new Date(t.date);
-  var timeStr=fmtHM(d);
-  var title=t.type==='deposit'?(t.source_name_snapshot||'存入'):(t.rule_name_snapshot||'支出');
-  if(t.note) title=t.note;
-  var amount2=parseFloat(t.amount);
-  return '<div class="recent-item" onclick="showTrxDetail(\''+t.id+'\')">'+
-    '<div class="ri-icon '+iconBg+'">'+icon+'</div>'+
-    '<div class="ri-info"><div class="ri-title">'+title+'</div><div class="ri-time">'+timeStr+'</div></div>'+
-    '<div class="ri-amount '+cls+'">'+sign+fmt(amount2)+'</div></div>';
-}
-
-function renderTrxList(){
-  var transactions=JSON.parse(localStorage.getItem(K.TRANSACTIONS)||'[]');
-  var today=todayStr();
-  var weekAgo=new Date();weekAgo.setDate(weekAgo.getDate()-7);
-  var monthAgo=new Date();monthAgo.setMonth(monthAgo.getMonth()-1);
-
-  var filtered=transactions.filter(function(t){
-    // type filter
-    if(currentTrxFilter!=='all'&&t.type!==currentTrxFilter) return false;
-    // date filter
-    if(currentDateFilter==='today') return isSameDay(t.date,today);
-    if(currentDateFilter==='week') return new Date(t.date)>=weekAgo;
-    if(currentDateFilter==='month') return new Date(t.date)>=monthAgo;
-    return true;
-  });
-
-  // summary
-  var tIncome=0,tExpense=0,tInterest=0;
-  transactions.forEach(function(t){
-    if(t.type==='deposit') tIncome+=parseFloat(t.amount);
-    if(t.type==='expense') tExpense+=parseFloat(t.amount);
-    if(t.type==='interest') tInterest+=parseFloat(t.amount);
-  });
-  $id('tsIncome').textContent=fmt(tIncome);
-  $id('tsExpense').textContent=fmt(tExpense);
-  $id('tsInterest').textContent=fmt(tInterest);
-
-  // group by date
-  var groups={};
-  filtered.forEach(function(t){
-    var d=new Date(t.date);
-    var label=fmtYMD(d);
-    var key=t.date.slice(0,10);
-    if(!groups[key]) groups[key]={label:label,items:[]};
-    groups[key].items.push(t);
-  });
-
-  var keys=Object.keys(groups).sort().reverse();
-  var html='';
-  if(keys.length===0){
-    html='<div class="empty-state"><div class="es-icon">📭</div>暂无流水记录</div>';
-  } else {
-    keys.forEach(function(key){
-      var g=groups[key];
-      html+='<div class="trx-date-group">';
-      html+='<div class="trx-date-label">'+g.label+'</div>';
-      g.items.forEach(function(t){
-        var cls='',iconBg='',icon='',sign='';
-        if(t.type==='deposit'){
-          cls='income';sign='+';iconBg='icon-green';icon=t.source_name_snapshot?t.source_name_snapshot.slice(0,1):'💰';
-        } else if(t.type==='expense'){
-          cls='expense';sign='-';iconBg='icon-orange';icon=t.rule_icon_snapshot||'🛒';
-        } else {
-          cls='interest';sign='+';iconBg='';icon='🏦';
-        }
-        var title=t.type==='deposit'?(t.source_name_snapshot||'存入'):(t.rule_name_snapshot||'支出');
-        if(t.note) title=t.note;
-        var desc=t.type==='deposit'?(t.source_name_snapshot||''):(t.rule_name_snapshot||'');
-        html+='<div class="trx-item" onclick="showTrxDetail(\''+t.id+'\')">'+
-          '<div class="ti-icon '+iconBg+'">'+icon+'</div>'+
-          '<div class="ti-info"><div class="ti-title">'+title+'</div><div class="ti-desc">'+desc+'</div></div>'+
-          '<div class="ti-right">'+
-          '<div class="ti-amount" style="color:'+(t.type==='deposit'?'var(--green)':t.type==='expense'?'var(--orange)':'var(--primary)')+'">'+sign+fmt(parseFloat(t.amount))+'</div>'+
-          '<div class="ti-balance">余额 '+fmt(parseFloat(t.balance_after))+'</div></div></div>';
-      });
-      html+='</div>';
-    });
-  }
-  $id('trxList').innerHTML=html;
-}
-
-function renderSourcesList(){
-  var sources=JSON.parse(localStorage.getItem(K.SOURCES)||'[]');
-  var html='';
-  sources.forEach(function(s){
-    html+='<div class="source-item">'+
-      '<span class="si-icon">'+s.icon+'</span>'+
-      '<span class="si-name">'+s.name+'</span>'+
-      '<button class="si-edit" onclick="editSource('+s.id+')">编辑</button></div>';
-  });
-  $id('sourcesContainer').innerHTML=html;
-
-  // Populate deposit source dropdown
-  var sel=$id('depositSource');
-  var opts='';
-  sources.forEach(function(s){
-    opts+='<option value="'+s.id+'">'+s.icon+' '+s.name+'</option>';
-  });
-  sel.innerHTML=opts;
-}
-
-function renderRulesList(){
-  var rules=JSON.parse(localStorage.getItem(K.RULES)||'[]');
-  var html='';
-  rules.forEach(function(r){
-    html+='<div class="rule-card">'+
-      '<div class="rc-top">'+
-      '<div class="rc-name">'+r.icon+' '+r.name+'</div>'+
-      '<div class="rc-tags">'+
-      '<div class="rc-tag'+(r.preset?' preset':'')+'">'+(r.preset?'预置':'自定义')+'</div>'+
-      '<button class="rc-edit-btn" onclick="editRule('+r.id+')">编辑</button></div></div>'+
-      '<div class="rc-desc">'+r.desc+'</div>'+
-      '<div class="rule-bar"><div class="personal-bar" style="width:'+r.personal+'%;"></div><div class="bank-bar" style="width:'+r.bank+'%;"></div></div>'+
-      '<div class="rule-legend"><div class="legend-item"><div class="legend-dot personal"></div>个人承担 '+r.personal+'%</div><div class="legend-item"><div class="legend-dot bank"></div>银行配资 '+r.bank+'%</div></div></div>';
-  });
-  $id('rulesContainer').innerHTML=html;
-
-  // Populate expense type dropdown
-  var sel=$id('expenseType');
-  var opts='';
-  rules.forEach(function(r){
-    opts+='<option value="'+r.id+'">'+r.icon+' '+r.name+'（个人'+r.personal+'%）</option>';
-  });
-  sel.innerHTML=opts;
-}
-
-// ========== TAB SWITCHING ==========
-function switchTab(tab){
-  currentTab=tab;
-  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
-  document.querySelectorAll('.tab-item').forEach(function(t){t.classList.remove('active')});
-  $id('view-'+tab).classList.add('active');
-  var tabEl=document.querySelector('.tab-item[data-tab="'+tab+'"]');
-  if(tabEl) tabEl.classList.add('active');
-  renderAll();
-}
-
-// ========== RECORD MODAL ==========
-function openRecord(type){
-  currentRecordType=type;
-  currentAmount=0;
-  $id('amountValue').textContent='0.00';
-  $id('depositNote').value='';
-  $id('expenseTotal').value='';
-  $id('expenseNote').value='';
-  updateFundingPreview();
-
-  if(type==='deposit'){
-    $id('depositForm').style.display='block';
-    $id('expenseForm').style.display='none';
-    $id('toggleDeposit').classList.add('active');
-    $id('toggleExpense').classList.remove('active');
-  } else {
-    $id('depositForm').style.display='none';
-    $id('expenseForm').style.display='block';
-    $id('toggleExpense').classList.add('active');
-    $id('toggleDeposit').classList.remove('active');
-  }
-
-  $id('recordModal').classList.add('show');
-}
-
-function closeRecord(){
-  $id('recordModal').classList.remove('show');
-}
-
-function toggleRecordType(type){
-  openRecord(type);
-}
-
-function setAmount(n){
-  currentAmount=n;
-  $id('amountValue').textContent=fmt(n);
-  // For deposit: also fill expense total if needed
-  if(currentRecordType==='expense'){
-    $id('expenseTotal').value=n;
-    updateFundingPreview();
-  }
-}
-
-function updateFundingPreview(){
-  if(currentRecordType!=='expense') return;
-  var ruleId=parseInt($id('expenseType').value);
-  var rules=JSON.parse(localStorage.getItem(K.RULES)||'[]');
-  var rule=rules.find(function(r){return r.id===ruleId})||{personal:50,bank:50};
-  var total=parseFloat($id('expenseTotal').value)||0;
-  var personal=total*rule.personal/100;
-  var bank=total*rule.bank/100;
-  $id('fpTotal').textContent='¥'+fmt(total);
-  $id('fpPersonal').textContent='¥'+fmt(personal);
-  $id('fpBank').textContent='¥'+fmt(bank);
-}
-
-function submitRecord(type){
-  var amount=0;
-  if(type==='deposit'){
-    amount=parseFloat($id('amountValue').textContent)||0;
-    if(amount<=0){showToast('请输入存入金额');return;}
-  } else {
-    amount=parseFloat($id('expenseTotal').value)||0;
-    if(amount<=0){showToast('请输入消费金额');return;}
-  }
-
-  var balance=parseFloat(localStorage.getItem(K.BALANCE)||'0');
-  var totalDeposit=parseFloat(localStorage.getItem(K.TOTAL_DEPOSIT)||'0');
-  var totalExpense=parseFloat(localStorage.getItem(K.TOTAL_EXPENSE)||'0');
-  var transactions=JSON.parse(localStorage.getItem(K.TRANSACTIONS)||'[]');
-
-  if(type==='deposit'){
-    var sourceId=parseInt($id('depositSource').value);
-    var sources=JSON.parse(localStorage.getItem(K.SOURCES)||'[]');
-    var source=sources.find(function(s){return s.id===sourceId})||{icon:'💰',name:'存入'};
-    var note=$id('depositNote').value.trim();
-
-    balance+=amount;
-    totalDeposit+=amount;
-
-    transactions.push({
-      id:Date.now(),
-      type:'deposit',
-      source_id:sourceId,
-      source_name_snapshot:source.icon+' '+source.name,
-      rule_id:0,rule_name_snapshot:'',rule_icon_snapshot:'',
-      personal_ratio_snapshot:0,
-      amount:amount,
-      personal_amount:amount,
-      bank_amount:0,
-      balance_after:Math.round(balance*100)/100,
-      note:note,
-      date:new Date().toISOString()
-    });
-    showToast('✅ 存入成功！+¥'+fmt(amount));
-  } else {
-    var ruleId=parseInt($id('expenseType').value);
-    var rules=JSON.parse(localStorage.getItem(K.RULES)||'[]');
-    var rule=rules.find(function(r){return r.id===ruleId})||{personal:50,bank:50,name:'消费',icon:'🛒'};
-    var personalAmt=amount*rule.personal/100;
-    personalAmt=Math.round(personalAmt*100)/100;
-    var bankAmt=amount*rule.bank/100;
-    bankAmt=Math.round(bankAmt*100)/100;
-    var note=$id('expenseNote').value.trim();
-
-    if(personalAmt>balance){
-      showToast('⚠️ 余额不足，个人需承担¥'+fmt(personalAmt));
+// ============================================================
+// INTEREST ENGINE
+// ============================================================
+async function calcPendingInterest() {
+  const child = state.child;
+  if (!child) return;
+  const lastDate = child.last_interest_date;
+  const todayStr = today();
+  if (!lastDate || lastDate < todayStr) {
+    const rate = parseFloat(state.config.annual_rate || '0.03');
+    if (rate <= 0 || child.balance <= 0) {
+      child.last_interest_date = todayStr;
+      await dbPut('child', child);
       return;
     }
-
-    balance-=personalAmt;
-    totalExpense+=amount;
-
-    transactions.push({
-      id:Date.now(),
-      type:'expense',
-      source_id:0,source_name_snapshot:'',
-      rule_id:ruleId,
-      rule_name_snapshot:rule.icon+' '+rule.name,
-      rule_icon_snapshot:rule.icon.slice(0,1)||'🛒',
-      personal_ratio_snapshot:rule.personal,
-      amount:amount,
-      personal_amount:personalAmt,
-      bank_amount:bankAmt,
-      balance_after:Math.round(balance*100)/100,
-      note:note,
-      date:new Date().toISOString()
-    });
-    showToast('✅ 消费记录成功！-¥'+fmt(personalAmt)+'（银行补贴¥'+fmt(bankAmt)+'）');
-  }
-
-  localStorage.setItem(K.BALANCE,fmt(balance));
-  localStorage.setItem(K.TOTAL_DEPOSIT,fmt(totalDeposit));
-  localStorage.setItem(K.TOTAL_EXPENSE,fmt(totalExpense));
-  localStorage.setItem(K.TRANSACTIONS,JSON.stringify(transactions));
-
-  closeRecord();
-  renderAll();
-}
-
-// ========== TRANSACTION DETAIL ==========
-function showTrxDetail(id){
-  var transactions=JSON.parse(localStorage.getItem(K.TRANSACTIONS)||'[]');
-  var t=transactions.find(function(x){return x.id==id||x.id==String(id)});
-  if(!t){showToast('记录不存在');return;}
-
-  var cls='',iconBg='',typeName='';
-  if(t.type==='deposit'){
-    cls='var(--green)';iconBg='#e8f8f0';typeName='存入';
-  } else if(t.type==='expense'){
-    cls='var(--orange)';iconBg='#fff3e0';typeName='支出';
-  } else {
-    cls='var(--primary)';iconBg='#f0edff';typeName='利息';
-  }
-
-  var sign=t.type==='expense'?'-':'+';
-  var icon=t.type==='deposit'?(t.source_name_snapshot?t.source_name_snapshot.slice(0,1):'💰'):(t.rule_icon_snapshot||'🏦');
-  var d=new Date(t.date);
-  var dateStr=fmtYMD(d)+' '+fmtHM(d);
-
-  var html='<div class="td-icon-area"><div class="td-type-icon" style="background:'+iconBg+';">'+icon+'</div></div>';
-  html+='<div class="td-amount" style="color:'+cls+';">'+sign+'¥'+fmt(parseFloat(t.amount))+'</div>';
-  html+='<div class="td-type-name">'+typeName+'</div>';
-  html+='<div class="td-rows">';
-
-  if(t.type==='deposit'){
-    html+='<div class="td-row"><span class="tdr-label">存入来源</span><span class="tdr-val">'+t.source_name_snapshot+'</span></div>';
-    html+='<div class="td-row"><span class="tdr-label">存入金额</span><span class="tdr-val">+¥'+fmt(parseFloat(t.amount))+'</span></div>';
-  } else if(t.type==='expense'){
-    html+='<div class="td-row"><span class="tdr-label">消费类型</span><span class="tdr-val">'+t.rule_name_snapshot+'</span></div>';
-    html+='<div class="td-row"><span class="tdr-label">消费总额</span><span class="tdr-val">¥'+fmt(parseFloat(t.amount))+'</span></div>';
-    html+='<div class="td-row"><span class="tdr-label">个人承担</span><span class="tdr-val" style="color:var(--orange)">-¥'+fmt(parseFloat(t.personal_amount))+'（'+t.personal_ratio_snapshot+'%）</span></div>';
-    html+='<div class="td-row"><span class="tdr-label">银行配资</span><span class="tdr-val" style="color:var(--green)">+¥'+fmt(parseFloat(t.bank_amount))+'</span></div>';
-  } else {
-    html+='<div class="td-row"><span class="tdr-label">利息类型</span><span class="tdr-val">每日利息</span></div>';
-    html+='<div class="td-row"><span class="tdr-label">利率</span><span class="tdr-val">年化 '+localStorage.getItem(K.RATE)+'%</span></div>';
-  }
-
-  if(t.note){
-    html+='<div class="td-row"><span class="tdr-label">备注</span><span class="tdr-val">'+t.note+'</span></div>';
-  }
-  html+='<div class="td-row"><span class="tdr-label">交易时间</span><span class="tdr-val">'+dateStr+'</span></div>';
-  html+='<div class="td-row"><span class="tdr-label">交易后余额</span><span class="tdr-val">¥'+fmt(parseFloat(t.balance_after))+'</span></div>';
-  html+='</div>';
-
-  $id('trxDetailContent').innerHTML=html;
-  $id('trxDetailModal').classList.add('show');
-}
-
-function filterTrx(el){
-  document.querySelectorAll('.filter-tab').forEach(function(e){e.classList.remove('active')});
-  el.classList.add('active');
-  currentTrxFilter=el.dataset.filter;
-  renderTrxList();
-}
-
-function filterDate(el){
-  document.querySelectorAll('.date-chip').forEach(function(e){e.classList.remove('active')});
-  el.classList.add('active');
-  currentDateFilter=el.dataset.range;
-  renderTrxList();
-}
-
-// ========== MODAL HELPERS ==========
-function closeModal(id){
-  $id(id).classList.remove('show');
-}
-
-// ========== SOURCE EDITOR ==========
-function addSource(){
-  editingSourceId=null;
-  $id('sourceEditTitle').textContent='新增存入来源';
-  $id('sourceEditIcon').value='';
-  $id('sourceEditName').value='';
-  $id('sourceSaveBtn').textContent='保存';
-  $id('sourceEditModal').classList.add('show');
-}
-
-function editSource(id){
-  editingSourceId=id;
-  var sources=JSON.parse(localStorage.getItem(K.SOURCES)||'[]');
-  var s=sources.find(function(x){return x.id===id});
-  if(!s) return;
-  $id('sourceEditTitle').textContent='编辑存入来源';
-  $id('sourceEditIcon').value=s.icon;
-  $id('sourceEditName').value=s.name;
-  $id('sourceSaveBtn').textContent='保存';
-  $id('sourceEditModal').classList.add('show');
-}
-
-function saveSource(){
-  var icon=$id('sourceEditIcon').value.trim().slice(0,2)||'📌';
-  var name=$id('sourceEditName').value.trim();
-  if(!name){showToast('请输入来源名称');return;}
-
-  var sources=JSON.parse(localStorage.getItem(K.SOURCES)||'[]');
-  var transactions=JSON.parse(localStorage.getItem(K.TRANSACTIONS)||'[]');
-
-  if(editingSourceId){
-    // Update existing
-    var idx=sources.findIndex(function(s){return s.id===editingSourceId});
-    if(idx>=0){
-      sources[idx].icon=icon;
-      sources[idx].name=name;
-    }
-    // Sync all history transactions
-    transactions.forEach(function(t){
-      if(t.source_id===editingSourceId){
-        t.source_name_snapshot=icon+' '+name;
+    const dailyRate = rate / 365;
+    let start = lastDate ? new Date(lastDate) : new Date(child.created_at);
+    start.setDate(start.getDate() + 1);
+    const end = new Date(todayStr);
+    let balance = child.balance;
+    let totalNew = 0;
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      if (balance <= 0) break;
+      const interest = Math.round(balance * dailyRate * 100) / 100;
+      if (interest > 0) {
+        balance += interest;
+        totalNew += interest;
+        await dbAdd('transaction', {
+          type: 'INTEREST', amount: interest, balance_after: balance,
+          source_id: null, source_name_snapshot: '',
+          funding_rule_id: null, rule_name_snapshot: '', rule_icon_snapshot: '',
+          total_expense_amount: 0, personal_amount: 0, bank_amount: 0, personal_ratio_snapshot: 0,
+          remark: '利息收入', created_at: new Date(d).toISOString()
+        });
       }
-    });
-  } else {
-    // New source
-    var newId2=newId(K.NEXT_SOURCE_ID);
-    sources.push({id:newId2,icon:icon,name:name});
-  }
-
-  localStorage.setItem(K.SOURCES,JSON.stringify(sources));
-  localStorage.setItem(K.TRANSACTIONS,JSON.stringify(transactions));
-  closeModal('sourceEditModal');
-  renderAll();
-  showToast('✅ 已保存');
-}
-
-// ========== RULE EDITOR ==========
-function addRule(){
-  editingRuleId=null;
-  $id('ruleEditTitle').textContent='新增配资规则';
-  $id('ruleEditIcon').value='';
-  $id('ruleEditName').value='';
-  $id('ruleEditDesc').value='';
-  $id('ruleEditRatio').value='50';
-  updateRuleEditPreview('50');
-  $id('ruleEditModal').classList.add('show');
-}
-
-function editRule(id){
-  editingRuleId=id;
-  var rules=JSON.parse(localStorage.getItem(K.RULES)||'[]');
-  var r=rules.find(function(x){return x.id===id});
-  if(!r) return;
-  $id('ruleEditTitle').textContent='编辑配资规则';
-  $id('ruleEditIcon').value=r.icon;
-  $id('ruleEditName').value=r.name;
-  $id('ruleEditDesc').value=r.desc;
-  $id('ruleEditRatio').value=r.personal;
-  updateRuleEditPreview(String(r.personal));
-  $id('ruleEditModal').classList.add('show');
-}
-
-function updateRuleEditPreview(val){
-  val=parseInt(val)||0;
-  var bank=100-val;
-  $id('ruleEditRatioVal').textContent=val;
-  $id('ruleEditRatioPct').textContent=val+'%';
-  $id('ruleEditBankPct').textContent=bank+'%';
-}
-
-function saveRule(){
-  var icon=$id('ruleEditIcon').value.trim().slice(0,2)||'🛒';
-  var name=$id('ruleEditName').value.trim();
-  var desc=$id('ruleEditDesc').value.trim();
-  var personal=parseInt($id('ruleEditRatio').value)||0;
-  var bank=100-personal;
-
-  if(!name){showToast('请输入规则名称');return;}
-
-  var rules=JSON.parse(localStorage.getItem(K.RULES)||'[]');
-  var transactions=JSON.parse(localStorage.getItem(K.TRANSACTIONS)||'[]');
-
-  if(editingRuleId){
-    // Update existing
-    var idx=rules.findIndex(function(r){return r.id===editingRuleId});
-    if(idx>=0){
-      rules[idx].icon=icon;
-      rules[idx].name=name;
-      rules[idx].desc=desc||'';
-      rules[idx].personal=personal;
-      rules[idx].bank=bank;
     }
-    // Sync name/icon/desc in history
-    transactions.forEach(function(t){
-      if(t.rule_id===editingRuleId){
-        t.rule_name_snapshot=icon+' '+name;
-        t.rule_icon_snapshot=icon.slice(0,1)||'🛒';
+    if (totalNew > 0) {
+      child.balance = Math.round(balance * 100) / 100;
+      child.total_interest = Math.round((child.total_interest + totalNew) * 100) / 100;
+    }
+    child.last_interest_date = todayStr;
+    await dbPut('child', child);
+  }
+}
+
+// ============================================================
+// MONTHLY STATS
+// ============================================================
+function calcMonthlyStats(transactions, year, month) {
+  const start = new Date(year, month, 1);
+  const end = new Date(year, month + 1, 0, 23, 59, 59);
+  const filtered = transactions.filter(t => {
+    const d = new Date(t.created_at);
+    return d >= start && d <= end;
+  });
+  let deposit = 0, expense = 0, funding = 0;
+  for (const t of filtered) {
+    if (t.type === 'DEPOSIT' || t.type === 'INTEREST') deposit += t.amount;
+    if (t.type === 'EXPENSE') {
+      expense += t.personal_amount;
+      funding += t.bank_amount;
+    }
+  }
+  return { deposit, expense, funding };
+}
+
+// ============================================================
+// PASSWORD
+// ============================================================
+let _pwdCallback = null;
+let _pwdMode = 'verify';
+
+function getPassword() { return state.config.admin_pwd || 'admin'; }
+function isDefaultPwd() { return !state.config.admin_pwd || state.config.admin_pwd === 'admin'; }
+
+function openPwdModal(callback, subtitle) {
+  _pwdCallback = callback;
+  _pwdMode = 'verify';
+  document.getElementById('pwdTitle').textContent = '🔒 验证密码';
+  document.getElementById('pwdSubtitle').textContent = subtitle || '请输入管理密码以确认操作';
+  document.getElementById('pwdInput').value = '';
+  document.getElementById('pwdInput').type = 'password';
+  document.getElementById('pwdInput').placeholder = '请输入密码';
+  document.getElementById('pwdError').classList.remove('show');
+  document.getElementById('pwdInput').classList.remove('error');
+  document.getElementById('pwdModal').classList.add('show');
+  setTimeout(() => document.getElementById('pwdInput').focus(), 100);
+}
+
+function closePwdModal() {
+  document.getElementById('pwdModal').classList.remove('show');
+  _pwdCallback = null;
+  _pwdMode = 'verify';
+}
+
+function confirmPwd() {
+  const input = document.getElementById('pwdInput');
+  const val = input.value;
+  if (_pwdMode === 'verify') {
+    if (val === getPassword()) {
+      document.getElementById('pwdModal').classList.remove('show');
+      if (_pwdCallback) _pwdCallback();
+      _pwdCallback = null;
+    } else {
+      input.classList.add('error');
+      document.getElementById('pwdError').textContent = '❌ 密码错误，请重试';
+      document.getElementById('pwdError').classList.add('show');
+      setTimeout(() => input.classList.remove('error'), 400);
+    }
+  } else if (_pwdMode === 'change_old') {
+    if (val === getPassword()) {
+      _pwdMode = 'change_new';
+      document.getElementById('pwdTitle').textContent = '🔑 设置新密码';
+      document.getElementById('pwdSubtitle').textContent = '请输入新的管理密码';
+      input.value = ''; input.placeholder = '输入新密码';
+      document.getElementById('pwdError').classList.remove('show');
+      input.classList.remove('error');
+    } else {
+      input.classList.add('error');
+      document.getElementById('pwdError').textContent = '❌ 旧密码错误，请重试';
+      document.getElementById('pwdError').classList.add('show');
+      setTimeout(() => input.classList.remove('error'), 400);
+    }
+  } else if (_pwdMode === 'change_new') {
+    if (!val) {
+      input.classList.add('error');
+      document.getElementById('pwdError').textContent = '❌ 密码不能为空';
+      document.getElementById('pwdError').classList.add('show');
+      setTimeout(() => input.classList.remove('error'), 400);
+      return;
+    }
+    state.config.admin_pwd = val;
+    dbPut('app_config', {key:'admin_pwd', value:val, updated_at:new Date().toISOString()});
+    document.getElementById('pwdModal').classList.remove('show');
+    showToast('✅ 密码修改成功！');
+    renderProfile();
+    _pwdMode = 'verify'; _pwdCallback = null;
+  }
+}
+
+function openChangePwd() {
+  _pwdMode = 'change_old';
+  document.getElementById('pwdTitle').textContent = '🔑 验证旧密码';
+  document.getElementById('pwdSubtitle').textContent = '请输入当前管理密码';
+  document.getElementById('pwdInput').value = '';
+  document.getElementById('pwdInput').type = 'password';
+  document.getElementById('pwdInput').placeholder = '请输入当前密码';
+  document.getElementById('pwdError').textContent = '❌ 旧密码错误，请重试';
+  document.getElementById('pwdError').classList.remove('show');
+  document.getElementById('pwdInput').classList.remove('error');
+  document.getElementById('pwdModal').classList.add('show');
+  setTimeout(() => document.getElementById('pwdInput').focus(), 100);
+}
+
+// ============================================================
+// RENDER HOME
+// ============================================================
+function renderHome() {
+  const c = state.child;
+  if (!c) return;
+  const bankName = state.config.bank_name || '家庭银行';
+  document.getElementById('bankTitle').textContent = '🏦 ' + bankName;
+  document.getElementById('childSubtitle').textContent = c.subtitle + ' ✏️';
+
+  const now = new Date();
+  const curMonth = calcMonthlyStats(state.transactions, now.getFullYear(), now.getMonth());
+  const prevMonth = calcMonthlyStats(state.transactions, now.getFullYear(), now.getMonth() - 1);
+
+  // Yesterday's interest
+  const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
+  const ydStr = fmtDate(yesterday.toISOString());
+  const yesterdayInterest = state.transactions
+    .filter(t => t.type === 'INTEREST' && fmtDate(t.created_at) === ydStr)
+    .reduce((s, t) => s + t.amount, 0);
+
+  let html = '';
+  // Balance Card
+  html += `<div class="balance-card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+      <div><div class="label">可用余额</div><div class="amount">${fmt(c.balance)}<span class="unit">元</span></div></div>
+      <div style="text-align:right;"><div style="font-size:12px;opacity:.7;">昨日利息</div><div style="font-size:22px;font-weight:700;margin-top:4px;">+${fmt(yesterdayInterest)}<span style="font-size:13px;font-weight:400;opacity:.7;"> 元</span></div></div>
+    </div>
+    <div class="balance-stats">
+      <div class="stat"><div class="stat-label">累计存入</div><div class="stat-val">${fmt(c.total_deposit)}</div></div>
+      <div class="stat"><div class="stat-label">累计扣款</div><div class="stat-val">${fmt(c.total_expense)}</div></div>
+      <div class="stat"><div class="stat-label">累计利息</div><div class="stat-val">${fmt(c.total_interest)}</div></div>
+    </div>
+  </div>`;
+
+  // Quick Actions
+  html += `<div class="quick-actions">
+    <div class="quick-btn" onclick="openRecord('deposit')"><div class="icon-circle icon-green">💰</div><div class="btn-label">记录存入</div></div>
+    <div class="quick-btn" onclick="openRecord('expense')"><div class="icon-circle icon-orange">🛒</div><div class="btn-label">记录消费</div></div>
+    <div class="quick-btn" onclick="openRateModal()"><div class="icon-circle icon-purple">💹</div><div class="btn-label">利率设置</div></div>
+  </div>`;
+
+  // Monthly Overview
+  html += `<div class="section-title">月度总览</div>
+  <div class="monthly-grid">
+    <div class="monthly-row">
+      <div class="monthly-item"><div class="s-label">本月存入</div><div class="s-val green">+${fmt(curMonth.deposit)}</div></div>
+      <div class="monthly-item"><div class="s-label">本月消费</div><div class="s-val orange">-${fmt(curMonth.expense)}</div></div>
+      <div class="monthly-item"><div class="s-label">本月配资</div><div class="s-val purple">+${fmt(curMonth.funding)}</div></div>
+    </div>
+    <div class="monthly-row">
+      <div class="monthly-item"><div class="s-label">上月存入</div><div class="s-val green">+${fmt(prevMonth.deposit)}</div></div>
+      <div class="monthly-item"><div class="s-label">上月消费</div><div class="s-val orange">-${fmt(prevMonth.expense)}</div></div>
+      <div class="monthly-item"><div class="s-label">上月配资</div><div class="s-val purple">+${fmt(prevMonth.funding)}</div></div>
+    </div>
+  </div>`;
+
+  // Recent Transactions
+  const recent = [...state.transactions].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 8);
+  html += `<div class="section-title">最近流水</div>`;
+  html += `<div class="ri-col-header"><span class="ri-ch-icon"></span><span class="ri-ch-info"></span><span>存款/消费</span><span>扣款</span><span>配资</span></div>`;
+  html += `<div class="recent-list">`;
+  if (recent.length === 0) {
+    html += `<div class="empty-state"><div class="empty-icon">📭</div><p>暂无流水记录</p></div>`;
+  }
+  for (const t of recent) {
+    const iconBg = t.type === 'DEPOSIT' ? 'icon-green' : t.type === 'EXPENSE' ? 'icon-orange' : 'icon-purple';
+    const icon = t.type === 'DEPOSIT' ? (state.sources.find(s => s.id === t.source_id)?.icon || '💰')
+               : t.type === 'EXPENSE' ? (t.rule_icon_snapshot || '🛒')
+               : '🏦';
+    const title = t.type === 'DEPOSIT' ? (t.source_name_snapshot || t.remark || '存入')
+                : t.type === 'EXPENSE' ? (t.remark || t.rule_name_snapshot || '消费')
+                : '利息收入';
+
+    let col1 = '', col2 = '', col3 = '';
+    if (t.type === 'DEPOSIT' || t.type === 'INTEREST') {
+      col1 = `<div class="ri-amt-val deposit">+${fmt(t.amount)}</div>`;
+      col2 = `<div class="ri-amt-val muted">—</div>`;
+      col3 = `<div class="ri-amt-val muted">—</div>`;
+    } else {
+      col1 = `<div class="ri-amt-val deduct">-${fmt(t.total_expense_amount)}</div>`;
+      col2 = `<div class="ri-amt-val deduct">-${fmt(t.personal_amount)}</div>`;
+      col3 = `<div class="ri-amt-val fund">+${fmt(t.bank_amount)}</div>`;
+    }
+    html += `<div class="recent-item" onclick="showTrxDetail(${t.id})">
+      <div class="ri-icon ${iconBg}">${icon}</div>
+      <div class="ri-info"><div class="ri-title">${title}</div><div class="ri-time">${fmtDateTime(t.created_at)}</div></div>
+      <div class="ri-amounts"><div class="ri-amt-col">${col1}</div><div class="ri-amt-col">${col2}</div><div class="ri-amt-col">${col3}</div></div>
+    </div>`;
+  }
+  html += `</div>`;
+  document.getElementById('homeContent').innerHTML = html;
+}
+
+// ============================================================
+// RENDER TRANSACTIONS
+// ============================================================
+function renderTransactions() {
+  // Filter tabs
+  const filters = [{key:'all',label:'全部'},{key:'DEPOSIT',label:'存入'},{key:'EXPENSE',label:'支出'},{key:'INTEREST',label:'利息'}];
+  let tabHtml = '';
+  for (const f of filters) {
+    tabHtml += `<div class="filter-tab${state.trxFilter===f.key?' active':''}" onclick="setTrxFilter('${f.key}')">${f.label}</div>`;
+  }
+  document.getElementById('filterTabs').innerHTML = tabHtml;
+
+  // Date filter
+  const dateFilters = [{key:'all',label:'全部'},{key:'today',label:'今天'},{key:'week',label:'本周'},{key:'month',label:'本月'}];
+  let dateHtml = '';
+  for (const f of dateFilters) {
+    dateHtml += `<div class="date-chip${state.trxDateFilter===f.key?' active':''}" onclick="setTrxDateFilter('${f.key}')">${f.label}</div>`;
+  }
+  document.getElementById('dateFilter').innerHTML = dateHtml;
+
+  // Filter transactions
+  let filtered = [...state.transactions];
+  if (state.trxFilter !== 'all') filtered = filtered.filter(t => t.type === state.trxFilter);
+
+  const now = new Date();
+  if (state.trxDateFilter === 'today') {
+    const td = today();
+    filtered = filtered.filter(t => fmtDate(t.created_at) === td);
+  } else if (state.trxDateFilter === 'week') {
+    const weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay());
+    filtered = filtered.filter(t => new Date(t.created_at) >= weekStart);
+  } else if (state.trxDateFilter === 'month') {
+    const ms = new Date(now.getFullYear(), now.getMonth(), 1);
+    filtered = filtered.filter(t => new Date(t.created_at) >= ms);
+  }
+
+  filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  // Group by date
+  const groups = {};
+  for (const t of filtered) {
+    const d = fmtDate(t.created_at);
+    if (!groups[d]) groups[d] = [];
+    groups[d].push(t);
+  }
+
+  let html = '<div class="trx-list">';
+  if (filtered.length === 0) {
+    html += '<div class="empty-state"><div class="empty-icon">📭</div><p>暂无流水记录</p></div>';
+  }
+  for (const [date, items] of Object.entries(groups)) {
+    const d = new Date(date);
+    const label = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+    html += `<div class="trx-date-group"><div class="trx-date-label">${label}</div>`;
+    for (const t of items) {
+      const iconBg = t.type === 'DEPOSIT' ? 'icon-green' : t.type === 'EXPENSE' ? 'icon-orange' : 'icon-purple';
+      const icon = t.type === 'DEPOSIT' ? (state.sources.find(s => s.id === t.source_id)?.icon || '💰')
+                 : t.type === 'EXPENSE' ? (t.rule_icon_snapshot || '🛒')
+                 : '🏦';
+      const title = t.type === 'DEPOSIT' ? (t.source_name_snapshot || t.remark || '存入')
+                  : t.type === 'EXPENSE' ? (t.remark || t.rule_name_snapshot || '消费')
+                  : '利息收入';
+      const desc = t.type === 'EXPENSE' ? (t.rule_name_snapshot || '') : '';
+      const amountColor = t.type === 'DEPOSIT' || t.type === 'INTEREST' ? '#00b894' : '#e17055';
+      const amountPrefix = t.type === 'DEPOSIT' || t.type === 'INTEREST' ? '+' : '-';
+      const amountVal = t.type === 'EXPENSE' ? t.personal_amount : t.amount;
+      const sub = t.type === 'EXPENSE' ? `配资+${fmt(t.bank_amount)}` : '';
+
+      html += `<div class="trx-item" onclick="showTrxDetail(${t.id})">
+        <div class="ti-icon ${iconBg}">${icon}</div>
+        <div class="ti-info"><div class="ti-title">${title}</div>${desc ? `<div class="ti-desc">${desc}</div>` : ''}</div>
+        <div class="ti-right"><div class="ti-amount" style="color:${amountColor};">${amountPrefix}${fmt(amountVal)}</div>${sub ? `<div class="ti-sub">${sub}</div>` : ''}</div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+  document.getElementById('trxContent').innerHTML = html;
+
+  // Summary
+  let sumDeposit = 0, sumExpense = 0, sumInterest = 0;
+  for (const t of filtered) {
+    if (t.type === 'DEPOSIT') sumDeposit += t.amount;
+    else if (t.type === 'EXPENSE') sumExpense += t.personal_amount;
+    else if (t.type === 'INTEREST') sumInterest += t.amount;
+  }
+  document.getElementById('trxSummary').innerHTML = `
+    <div class="ts-item"><div class="ts-label">存入</div><div class="ts-val" style="color:#00b894;">+${fmt(sumDeposit)}</div></div>
+    <div class="ts-item"><div class="ts-label">扣款</div><div class="ts-val" style="color:#e17055;">-${fmt(sumExpense)}</div></div>
+    <div class="ts-item"><div class="ts-label">利息</div><div class="ts-val" style="color:#6C5CE7;">+${fmt(sumInterest)}</div></div>`;
+}
+
+function setTrxFilter(f) { state.trxFilter = f; renderTransactions(); }
+function setTrxDateFilter(f) { state.trxDateFilter = f; renderTransactions(); }
+
+// ============================================================
+// RENDER RULES
+// ============================================================
+function renderRules() {
+  const rate = parseFloat(state.config.annual_rate || '0.03') * 100;
+  const child = state.child;
+
+  let html = '';
+  // Interest Card
+  const todayInterest = state.transactions
+    .filter(t => t.type === 'INTEREST' && fmtDate(t.created_at) === today())
+    .reduce((s, t) => s + t.amount, 0);
+
+  html += `<div class="interest-card">
+    <div class="ic-label">年利率</div>
+    <div class="ic-rate">${rate.toFixed(1)}%</div>
+    <div class="ic-sub">日利率 ${(parseFloat(state.config.annual_rate||0.03)/365*100).toFixed(6)}%</div>
+    <div class="ic-total">
+      <div><div class="it-label">累计利息</div><div class="it-val">${fmt(child?.total_interest||0)}</div></div>
+      <div><div class="it-label">今日利息</div><div class="it-val">${fmt(todayInterest)}</div></div>
+      <div><div class="it-label">当前余额</div><div class="it-val">${fmt(child?.balance||0)}</div></div>
+    </div>
+  </div>`;
+
+  // Deposit Sources
+  html += `<div class="rule-section"><div class="rule-section-title">存入来源</div></div>`;
+  for (const s of state.sources) {
+    html += `<div class="source-item" style="margin:0 16px 8px;">
+      <span class="si-icon">${s.icon}</span>
+      <span class="si-name">${s.name}</span>
+      <button class="si-edit" onclick="editSource(${s.id})">编辑</button>
+    </div>`;
+  }
+  html += `<div class="add-rule-btn" style="margin:0 16px 16px;" onclick="addSource()">➕ 新增存入来源</div>`;
+
+  // Funding Rules
+  html += `<div class="rule-section"><div class="rule-section-title">配资规则</div></div>`;
+  for (const r of state.rules) {
+    const pPct = Math.round(r.personal_ratio * 100);
+    const bPct = Math.round(r.bank_ratio * 100);
+    html += `<div class="rule-card">
+      <div class="rc-top">
+        <div class="rc-name">${r.icon} ${r.name}</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="rc-tag${r.is_preset?' preset':''}">${r.is_preset?'预置':'自定义'}</div>
+          <button class="rc-edit-btn" onclick="editRule(${r.id})">编辑</button>
+        </div>
+      </div>
+      <div class="rc-desc">${r.description||''}</div>
+      <div class="rule-bar"><div class="personal-bar" style="width:${pPct}%;"></div><div class="bank-bar" style="width:${bPct}%;"></div></div>
+      <div class="rule-legend">
+        <div class="legend-item"><div class="legend-dot personal"></div>个人承担 ${pPct}%</div>
+        <div class="legend-item"><div class="legend-dot bank"></div>银行配资 ${bPct}%</div>
+      </div>
+    </div>`;
+  }
+  html += `<div class="add-rule-btn" onclick="addRule()">➕ 新增配资规则</div>`;
+
+  document.getElementById('rulesContent').innerHTML = html;
+}
+
+// ============================================================
+// RENDER PROFILE
+// ============================================================
+function renderProfile() {
+  const c = state.child;
+  if (!c) return;
+  let html = '';
+
+  // Child Card
+  html += `<div class="child-card" onclick="editChildName()" style="cursor:pointer;">
+    <div class="cc-avatar" style="background:linear-gradient(135deg,#6C5CE7,#a29bfe);">${c.name.charAt(0)}</div>
+    <div class="cc-info"><div class="cc-name">${c.name}</div><div class="cc-balance">余额: ¥${fmt(c.balance)}</div></div>
+    <div class="cc-arrow">›</div>
+  </div>`;
+
+  // Menu
+  html += `<div class="menu-section" style="margin-top:12px;">
+    <div class="menu-section-title">账户管理</div>
+    <div class="menu-item" onclick="switchTab('rules')">
+      <div class="mi-icon icon-purple">⚙️</div><div class="mi-label">配资规则管理</div><div class="mi-arrow">›</div>
+    </div>
+    <div class="menu-item" onclick="openRateModal()">
+      <div class="mi-icon icon-orange">💹</div><div class="mi-label">利率设置</div><div class="mi-arrow">›</div>
+    </div>
+  </div>`;
+
+  html += `<div class="menu-section">
+    <div class="menu-section-title">安全设置</div>
+    <div class="menu-item" onclick="openChangePwd()">
+      <div class="mi-icon icon-green">🔒</div>
+      <div class="mi-label">修改管理密码</div>
+      <div class="mi-value">${isDefaultPwd()?'默认密码':'已修改'}</div><div class="mi-arrow">›</div>
+    </div>
+  </div>`;
+
+  html += `<div class="menu-section">
+    <div class="menu-section-title">其他</div>
+    <div class="menu-item" onclick="editBankName()">
+      <div class="mi-icon" style="background:#f0edff;">🏦</div>
+      <div class="mi-label">银行名称</div><div class="mi-value">${state.config.bank_name||'家庭银行'}</div><div class="mi-arrow">›</div>
+    </div>
+    <div class="menu-item" onclick="editSubtitle()">
+      <div class="mi-icon" style="background:#fff3e0;">✏️</div>
+      <div class="mi-label">副标题</div><div class="mi-value">${c.subtitle}</div><div class="mi-arrow">›</div>
+    </div>
+    <div class="menu-item" onclick="exportData()">
+      <div class="mi-icon" style="background:#e8f8f0;">📤</div>
+      <div class="mi-label">导出数据</div><div class="mi-arrow">›</div>
+    </div>
+    <div class="menu-item" onclick="importData()">
+      <div class="mi-icon" style="background:#f0f0f5;">📥</div>
+      <div class="mi-label">导入数据</div><div class="mi-arrow">›</div>
+    </div>
+  </div>`;
+
+  document.getElementById('profileContent').innerHTML = html;
+}
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(name) {
+  state.currentTab = name;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.tab-item').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === name);
+  });
+  if (name === 'home') renderHome();
+  else if (name === 'transactions') renderTransactions();
+  else if (name === 'rules') renderRules();
+  else if (name === 'profile') renderProfile();
+}
+
+// ============================================================
+// RECORD MODAL
+// ============================================================
+function openRecord(type) {
+  state.recordType = type;
+  state.currentAmount = '0';
+  populateRecordSelects();
+  document.getElementById('recordModal').classList.add('show');
+  toggleRecordType(type);
+  updateAmountDisplay();
+}
+
+function closeRecord() { document.getElementById('recordModal').classList.remove('show'); }
+
+function toggleRecordType(type) {
+  state.recordType = type;
+  document.getElementById('toggleDeposit').classList.toggle('active', type === 'deposit');
+  document.getElementById('toggleExpense').classList.toggle('active', type === 'expense');
+  document.getElementById('depositForm').style.display = type === 'deposit' ? 'block' : 'none';
+  document.getElementById('expenseForm').style.display = type === 'expense' ? 'block' : 'none';
+  state.currentAmount = '0';
+  updateAmountDisplay();
+  updateFundingPreview();
+}
+
+function populateRecordSelects() {
+  let srcOpts = '';
+  for (const s of state.sources) srcOpts += `<option value="${s.id}">${s.icon} ${s.name}</option>`;
+  document.getElementById('depositSource').innerHTML = srcOpts;
+
+  let ruleOpts = '';
+  for (const r of state.rules) {
+    const pPct = Math.round(r.personal_ratio * 100);
+    ruleOpts += `<option value="${r.id}">${r.icon} ${r.name}（个人${pPct}%）</option>`;
+  }
+  document.getElementById('expenseType').innerHTML = ruleOpts;
+}
+
+function updateAmountDisplay() {
+  document.getElementById('amountValue').textContent = parseFloat(state.currentAmount || 0).toFixed(2);
+}
+
+function updateFundingPreview() {
+  const amount = parseFloat(state.currentAmount) || 0;
+  const ruleId = parseInt(document.getElementById('expenseType')?.value);
+  const rule = state.rules.find(r => r.id === ruleId);
+  const preview = document.getElementById('fundingPreview');
+  if (!rule || amount <= 0) { preview.style.display = 'none'; return; }
+  preview.style.display = 'block';
+  const personal = Math.round(amount * rule.personal_ratio * 100) / 100;
+  const bank = Math.round(amount * rule.bank_ratio * 100) / 100;
+  document.getElementById('fpTotal').textContent = '¥' + fmt(amount);
+  document.getElementById('fpPersonal').textContent = '¥' + fmt(personal);
+  document.getElementById('fpBank').textContent = '¥' + fmt(bank);
+}
+
+async function submitRecord() {
+  const amount = parseFloat(state.currentAmount);
+  if (!amount || amount <= 0) { showToast('⚠️ 请输入金额'); return; }
+
+  if (state.recordType === 'deposit') {
+    openPwdModal(async () => {
+      const sourceId = parseInt(document.getElementById('depositSource').value);
+      const source = state.sources.find(s => s.id === sourceId);
+      const remark = document.getElementById('depositRemark').value.trim() || source?.name || '存入';
+      const c = state.child;
+      const newBalance = Math.round((c.balance + amount) * 100) / 100;
+      c.balance = newBalance;
+      c.total_deposit = Math.round((c.total_deposit + amount) * 100) / 100;
+      await dbPut('child', c);
+      await dbAdd('transaction', {
+        type: 'DEPOSIT', amount, balance_after: newBalance,
+        source_id: sourceId, source_name_snapshot: source?.name || '',
+        funding_rule_id: null, rule_name_snapshot: '', rule_icon_snapshot: '',
+        total_expense_amount: 0, personal_amount: 0, bank_amount: 0, personal_ratio_snapshot: 0,
+        remark, created_at: new Date().toISOString()
+      });
+      closeRecord();
+      showToast('✅ 存入成功！');
+      await refreshData();
+    }, '确认存入需要验证密码');
+  } else {
+    const ruleId = parseInt(document.getElementById('expenseType').value);
+    const rule = state.rules.find(r => r.id === ruleId);
+    if (!rule) { showToast('⚠️ 请选择消费类型'); return; }
+    const personal = Math.round(amount * rule.personal_ratio * 100) / 100;
+    const bank = Math.round(amount * rule.bank_ratio * 100) / 100;
+    const c = state.child;
+    if (personal > c.balance) { showToast('⚠️ 余额不足！个人承担 ¥' + fmt(personal) + ' > 可用余额 ¥' + fmt(c.balance)); return; }
+    const remark = document.getElementById('expenseRemark').value.trim() || rule.name;
+    const newBalance = Math.round((c.balance - personal) * 100) / 100;
+    c.balance = newBalance;
+    c.total_expense = Math.round((c.total_expense + personal) * 100) / 100;
+    await dbPut('child', c);
+    await dbAdd('transaction', {
+      type: 'EXPENSE', amount: -personal, balance_after: newBalance,
+      source_id: null, source_name_snapshot: '',
+      funding_rule_id: ruleId, rule_name_snapshot: rule.name, rule_icon_snapshot: rule.icon,
+      total_expense_amount: amount, personal_amount: personal, bank_amount: bank,
+      personal_ratio_snapshot: rule.personal_ratio,
+      remark, created_at: new Date().toISOString()
+    });
+    closeRecord();
+    showToast('✅ 消费记录成功！');
+    await refreshData();
+  }
+}
+
+// ============================================================
+// SOURCE CRUD
+// ============================================================
+function addSource() {
+  state.editingSourceId = null;
+  document.getElementById('sourceEditTitle').textContent = '新增存入来源';
+  document.getElementById('sourceEditIcon').value = '';
+  document.getElementById('sourceEditName').value = '';
+  document.getElementById('sourceEditModal').classList.add('show');
+}
+
+function editSource(id) {
+  const s = state.sources.find(x => x.id === id);
+  if (!s) return;
+  state.editingSourceId = id;
+  document.getElementById('sourceEditTitle').textContent = '编辑存入来源';
+  document.getElementById('sourceEditIcon').value = s.icon;
+  document.getElementById('sourceEditName').value = s.name;
+  document.getElementById('sourceEditModal').classList.add('show');
+}
+
+async function saveSource() {
+  const icon = document.getElementById('sourceEditIcon').value.trim() || '📌';
+  const name = document.getElementById('sourceEditName').value.trim();
+  if (!name) { showToast('⚠️ 请输入来源名称'); return; }
+
+  openPwdModal(async () => {
+    if (state.editingSourceId !== null) {
+      const s = state.sources.find(x => x.id === state.editingSourceId);
+      if (s) {
+        s.icon = icon; s.name = name;
+        await dbPut('deposit_source', s);
+        // Sync historical transactions
+        const txs = state.transactions.filter(t => t.source_id === s.id);
+        for (const t of txs) {
+          t.source_name_snapshot = name;
+          await dbPut('transaction', t);
+        }
+        showToast('✅ 存入来源已修改，历史数据已同步更新');
       }
-    });
-  } else {
-    // New rule
-    var newId2=newId(K.NEXT_RULE_ID);
-    rules.push({id:newId2,icon:icon,name:name,desc:desc||'',personal:personal,bank:bank,preset:false});
-  }
-
-  localStorage.setItem(K.RULES,JSON.stringify(rules));
-  localStorage.setItem(K.TRANSACTIONS,JSON.stringify(transactions));
-  closeModal('ruleEditModal');
-  renderAll();
-  showToast('✅ 已保存');
+    } else {
+      await dbAdd('deposit_source', {icon, name, is_preset: 0, sort_order: state.sources.length + 1});
+      showToast('✅ 新增存入来源成功');
+    }
+    closeModal('sourceEditModal');
+    await refreshData();
+  }, (state.editingSourceId !== null ? '保存来源修改' : '新增存入来源') + '需要验证密码');
 }
 
-// ========== RATE EDITOR ==========
-function openRateModal(){
-  var rate=parseFloat(localStorage.getItem(K.RATE)||'3.0');
-  var balance=parseFloat(localStorage.getItem(K.BALANCE)||'0');
-  var history=JSON.parse(localStorage.getItem(K.RATE_HISTORY)||'[]');
-
-  $id('rateValue').textContent=rate.toFixed(1);
-  $id('rateSlider').value=rate;
-  updateRateDisplay(String(rate));
-  $id('rateBalanceHint').textContent=fmt(balance);
-
-  // Rate history
-  var hHTML='';
-  if(history.length===0){
-    hHTML='<div style="color:#bbb;text-align:center;">暂无记录</div>';
-  } else {
-    history.slice().reverse().forEach(function(h){
-      var noteStr=h.note?'<span style="color:#999;">'+h.note+'</span>':'';
-      hHTML+='<div class="rate-history-item">'+
-        '<span class="rh-date">'+h.date+'</span>'+
-        '<span>'+h.old_rate+'% → '+h.new_rate+'%</span>'+
-        noteStr+'</div>';
-    });
-  }
-  $id('rateHistoryList').innerHTML=hHTML;
-  $id('rateModal').classList.add('show');
+// ============================================================
+// RULE CRUD
+// ============================================================
+function addRule() {
+  state.editingRuleId = null;
+  document.getElementById('ruleEditTitle').textContent = '新增配资规则';
+  document.getElementById('ruleEditIcon').value = '';
+  document.getElementById('ruleEditName').value = '';
+  document.getElementById('ruleEditDesc').value = '';
+  document.getElementById('ruleEditRatio').value = 50;
+  updateRuleEditPreview(50);
+  document.getElementById('ruleEditModal').classList.add('show');
 }
 
-function updateRateDisplay(val){
-  val=parseFloat(val)||0;
-  var dailyRate=val/365/100;
-  var balance=parseFloat(localStorage.getItem(K.BALANCE)||'0');
-  var dailyInterest=balance*dailyRate;
-  // yearly estimate with compound
-  var yearlyInterest=balance*(Math.pow(1+dailyRate,365)-1);
-
-  $id('rateValue').textContent=val.toFixed(1);
-  $id('rateCalcDisplay').textContent=val.toFixed(1)+'%';
-  $id('dailyRateDisplay').textContent=(dailyRate*100).toFixed(6)+'%';
-  $id('dailyInterestDisplay').textContent=fmt(dailyInterest);
-  $id('yearlyInterestDisplay').textContent=fmt(yearlyInterest);
-  $id('rateBalanceHint').textContent=fmt(balance);
+function editRule(id) {
+  const r = state.rules.find(x => x.id === id);
+  if (!r) return;
+  state.editingRuleId = id;
+  document.getElementById('ruleEditTitle').textContent = '编辑配资规则';
+  document.getElementById('ruleEditIcon').value = r.icon;
+  document.getElementById('ruleEditName').value = r.name;
+  document.getElementById('ruleEditDesc').value = r.description || '';
+  document.getElementById('ruleEditRatio').value = Math.round(r.personal_ratio * 100);
+  updateRuleEditPreview(Math.round(r.personal_ratio * 100));
+  document.getElementById('ruleEditModal').classList.add('show');
 }
 
-function saveRate(){
-  var newRate=parseFloat($id('rateSlider').value)||0;
-  var oldRate=parseFloat(localStorage.getItem(K.RATE)||'3.0');
+function updateRuleEditPreview(val) {
+  val = parseInt(val);
+  document.getElementById('ruleEditRatioVal').textContent = val;
+  document.getElementById('ruleEditRatioPct').textContent = val + '%';
+  document.getElementById('ruleEditBankPct').textContent = (100 - val) + '%';
+}
 
-  if(Math.abs(newRate-oldRate)<0.001){
-    closeModal('rateModal');
+async function saveRule() {
+  const icon = document.getElementById('ruleEditIcon').value.trim() || '📌';
+  const name = document.getElementById('ruleEditName').value.trim();
+  const desc = document.getElementById('ruleEditDesc').value.trim();
+  const personalPct = parseInt(document.getElementById('ruleEditRatio').value);
+  const personalRatio = personalPct / 100;
+  const bankRatio = 1 - personalRatio;
+  if (!name) { showToast('⚠️ 请输入类型名称'); return; }
+
+  openPwdModal(async () => {
+    if (state.editingRuleId !== null) {
+      const r = state.rules.find(x => x.id === state.editingRuleId);
+      if (r) {
+        r.icon = icon; r.name = name; r.description = desc;
+        r.personal_ratio = personalRatio; r.bank_ratio = bankRatio;
+        await dbPut('funding_rule', r);
+        // Sync name/icon in historical transactions (NOT ratio)
+        const txs = state.transactions.filter(t => t.funding_rule_id === r.id);
+        for (const t of txs) {
+          t.rule_name_snapshot = name; t.rule_icon_snapshot = icon;
+          await dbPut('transaction', t);
+        }
+        showToast('✅ 配资规则已修改');
+      }
+    } else {
+      await dbAdd('funding_rule', {icon, name, description: desc, personal_ratio: personalRatio, bank_ratio: bankRatio, is_preset: 0, is_active: 1, sort_order: state.rules.length + 1});
+      showToast('✅ 新增配资规则成功');
+    }
+    closeModal('ruleEditModal');
+    await refreshData();
+  }, (state.editingRuleId !== null ? '保存规则修改' : '新增配资规则') + '需要验证密码');
+}
+
+// ============================================================
+// RATE MODAL
+// ============================================================
+function openRateModal() {
+  const rate = parseFloat(state.config.annual_rate || '0.03') * 100;
+  document.getElementById('rateSlider').value = rate;
+  updateRateDisplay(rate);
+  renderRateLog();
+  document.getElementById('rateModal').classList.add('show');
+}
+
+function updateRateDisplay(val) {
+  val = parseFloat(val);
+  document.getElementById('rateValue').textContent = val.toFixed(1);
+  document.getElementById('rateCalcDisplay').textContent = val.toFixed(1) + '%';
+  const dr = val / 100 / 365;
+  document.getElementById('dailyRateDisplay').textContent = (dr * 100).toFixed(6) + '%';
+  document.getElementById('dailyInterestDisplay').textContent = fmt(state.child?.balance * dr || 0);
+  const yearly = state.child?.balance * (Math.pow(1 + dr, 365) - 1) || 0;
+  document.getElementById('yearlyInterestDisplay').textContent = fmt(yearly);
+}
+
+function renderRateLog() {
+  const logs = state.rateLogs.sort((a, b) => new Date(b.changed_at) - new Date(a.changed_at));
+  if (logs.length === 0) {
+    document.getElementById('rateLogList').innerHTML = '<div style="color:#ccc;text-align:center;padding:8px;">暂无记录</div>';
     return;
   }
-
-  localStorage.setItem(K.RATE,String(newRate));
-  var history=JSON.parse(localStorage.getItem(K.RATE_HISTORY)||'[]');
-  history.push({
-    date:todayStr(),
-    old_rate:oldRate,
-    new_rate:newRate,
-    note:newRate>oldRate?'利率上调':'利率下调'
-  });
-  localStorage.setItem(K.RATE_HISTORY,JSON.stringify(history));
-  closeModal('rateModal');
-  renderAll();
-  showToast('✅ 利率已更新为 '+newRate.toFixed(1)+'%');
-}
-
-// ========== INPUT MODAL (通用) ==========
-function editChildName(){
-  inputModalCallback='childName';
-  $id('inputModalTitle').textContent='修改子女名称';
-  $id('inputModalField').value=getChildName();
-  $id('inputModalField').maxLength=20;
-  $id('inputModal').classList.add('show');
-  setTimeout(function(){$id('inputModalField').focus();},300);
-}
-
-function editBankName(){
-  inputModalCallback='bankName';
-  $id('inputModalTitle').textContent='修改银行名称';
-  $id('inputModalField').value=getBankName();
-  $id('inputModalField').maxLength=20;
-  $id('inputModal').classList.add('show');
-  setTimeout(function(){$id('inputModalField').focus();},300);
-}
-
-function closeInputModal(){
-  $id('inputModal').classList.remove('show');
-  inputModalCallback=null;
-}
-
-function confirmInputModal(){
-  var val=$id('inputModalField').value.trim();
-  if(!val){showToast('请输入内容');return;}
-
-  if(inputModalCallback==='childName'){
-    localStorage.setItem(K.CHILD_NAME,val);
-    // Update splash screen
-    $id('splash').querySelector('.splash-sub').textContent=val+'的储蓄罐';
-  } else if(inputModalCallback==='bankName'){
-    localStorage.setItem(K.BANK_NAME,val);
+  let html = '';
+  for (const l of logs.slice(0, 10)) {
+    html += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;">
+      <span>${fmtDate(l.changed_at)}</span><span>${(l.old_rate*100).toFixed(1)}% → ${(l.new_rate*100).toFixed(1)}%</span>
+    </div>`;
   }
-
-  closeInputModal();
-  renderAll();
-  showToast('✅ 已保存');
+  document.getElementById('rateLogList').innerHTML = html;
 }
 
-// ========== TOAST ==========
-function showToast(msg){
-  var t=$id('toast');
-  t.textContent=msg;
-  t.classList.remove('show');
-  void t.offsetWidth; // reflow
-  t.classList.add('show');
+async function saveRate() {
+  const newRate = parseFloat(document.getElementById('rateSlider').value) / 100;
+  const oldRate = parseFloat(state.config.annual_rate || '0.03');
+  openPwdModal(async () => {
+    state.config.annual_rate = String(newRate);
+    await dbPut('app_config', {key: 'annual_rate', value: String(newRate), updated_at: new Date().toISOString()});
+    await dbAdd('rate_log', {old_rate: oldRate, new_rate: newRate, changed_at: new Date().toISOString()});
+    closeModal('rateModal');
+    showToast('✅ 利率已更新！');
+    await refreshData();
+  }, '保存利率设置需要验证密码');
 }
 
-// ========== STATUS BAR TIME ==========
-function updateStatusTime(){
-  var now=new Date();
-  var h=now.getHours(),m=now.getMinutes();
-  $id('statusTime').textContent=(h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+// ============================================================
+// TRX DETAIL
+// ============================================================
+async function showTrxDetail(id) {
+  const t = state.transactions.find(x => x.id === id);
+  if (!t) return;
+  let html = '';
+  if (t.type === 'DEPOSIT') {
+    html += `<div class="td-type-icon icon-green">${state.sources.find(s=>s.id===t.source_id)?.icon||'💰'}</div>`;
+    html += `<div class="td-amount" style="color:#00b894;">+${fmt(t.amount)}元</div>`;
+    html += `<div class="td-type-name">${t.source_name_snapshot||'存入'}</div>`;
+    html += `<div class="td-rows">
+      <div class="td-row"><span class="tdr-label">类型</span><span class="tdr-val">存入</span></div>
+      <div class="td-row"><span class="tdr-label">金额</span><span class="tdr-val">¥${fmt(t.amount)}</span></div>
+      <div class="td-row"><span class="tdr-label">来源</span><span class="tdr-val">${t.source_name_snapshot||'—'}</span></div>
+      <div class="td-row"><span class="tdr-label">备注</span><span class="tdr-val">${t.remark||'—'}</span></div>
+      <div class="td-row"><span class="tdr-label">交易后余额</span><span class="tdr-val">¥${fmt(t.balance_after)}</span></div>
+      <div class="td-row"><span class="tdr-label">交易时间</span><span class="tdr-val">${fmtDateTime(t.created_at)}</span></div>
+    </div>`;
+  } else if (t.type === 'INTEREST') {
+    html += `<div class="td-type-icon icon-purple">🏦</div>`;
+    html += `<div class="td-amount" style="color:#6C5CE7;">+${fmt(t.amount)}元</div>`;
+    html += `<div class="td-type-name">利息收入</div>`;
+    html += `<div class="td-rows">
+      <div class="td-row"><span class="tdr-label">类型</span><span class="tdr-val">利息</span></div>
+      <div class="td-row"><span class="tdr-label">金额</span><span class="tdr-val">¥${fmt(t.amount)}</span></div>
+      <div class="td-row"><span class="tdr-label">交易后余额</span><span class="tdr-val">¥${fmt(t.balance_after)}</span></div>
+      <div class="td-row"><span class="tdr-label">交易时间</span><span class="tdr-val">${fmtDateTime(t.created_at)}</span></div>
+    </div>`;
+  } else {
+    const pPct = Math.round((t.personal_ratio_snapshot||0)*100);
+    const bPct = 100 - pPct;
+    html += `<div class="td-type-icon icon-orange">${t.rule_icon_snapshot||'🛒'}</div>`;
+    html += `<div class="td-amount" style="color:#e17055;">-${fmt(t.personal_amount)}元</div>`;
+    html += `<div class="td-type-name">${t.rule_name_snapshot||'消费'}</div>`;
+    html += `<div class="td-rows">
+      <div class="td-row"><span class="tdr-label">消费类型</span><span class="tdr-val">${t.rule_icon_snapshot||''} ${t.rule_name_snapshot||'—'}</span></div>
+      <div class="td-row"><span class="tdr-label">消费总金额</span><span class="tdr-val">¥${fmt(t.total_expense_amount)}</span></div>
+      <div class="td-row"><span class="tdr-label">个人承担</span><span class="tdr-val">¥${fmt(t.personal_amount)}（${pPct}%）</span></div>
+      <div class="td-row"><span class="tdr-label">银行配资</span><span class="tdr-val">¥${fmt(t.bank_amount)}（${bPct}%）</span></div>
+      <div class="td-row"><span class="tdr-label">实际扣款</span><span class="tdr-val">¥${fmt(t.personal_amount)}</span></div>
+      <div class="td-row"><span class="tdr-label">交易后余额</span><span class="tdr-val">¥${fmt(t.balance_after)}</span></div>
+      <div class="td-row"><span class="tdr-label">用途</span><span class="tdr-val">${t.remark||'—'}</span></div>
+      <div class="td-row"><span class="tdr-label">交易时间</span><span class="tdr-val">${fmtDateTime(t.created_at)}</span></div>
+    </div>`;
+  }
+  document.getElementById('trxDetailContent').innerHTML = html;
+  document.getElementById('trxDetailModal').classList.add('show');
 }
 
-// ========== AMOUNT INPUT VIA KEYPAD ==========
-// Capture numeric input from native keyboard
-document.addEventListener('input',function(e){
-  if($id('recordModal').classList.contains('show')){
-    if(e.target.id==='depositSource') return;
-    var inp=null;
-    if(currentRecordType==='deposit'){
-      // We use quick amount buttons, but also allow direct edit via hidden input
-    } else {
-      inp=$id('expenseTotal');
+// ============================================================
+// PROFILE EDIT
+// ============================================================
+function editChildName() {
+  const c = state.child;
+  const v = prompt('修改名称', c.name);
+  if (v && v.trim()) {
+    const oldName = c.name;
+    c.name = v.trim();
+    if (c.subtitle.includes(oldName)) c.subtitle = c.subtitle.replace(oldName, v.trim());
+    dbPut('child', c).then(() => { refreshData(); });
+  }
+}
+
+function editSubtitle() {
+  const c = state.child;
+  const v = prompt('修改副标题', c.subtitle);
+  if (v && v.trim()) {
+    c.subtitle = v.trim();
+    dbPut('child', c).then(() => { refreshData(); });
+  }
+}
+
+function editBankName() {
+  const v = prompt('修改银行名称', state.config.bank_name || '家庭银行');
+  if (v && v.trim()) {
+    state.config.bank_name = v.trim();
+    dbPut('app_config', {key:'bank_name', value:v.trim(), updated_at:new Date().toISOString()}).then(() => { refreshData(); });
+  }
+}
+
+// ============================================================
+// DATA EXPORT/IMPORT
+// ============================================================
+function exportData() {
+  const data = {
+    version: 1,
+    exportDate: new Date().toISOString(),
+    child: state.child,
+    sources: state.sources,
+    rules: state.rules,
+    transactions: state.transactions,
+    config: state.config,
+    rateLogs: state.rateLogs
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `家庭银行备份_${today()}.json`; a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ 数据已导出');
+}
+
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if (!data.child || !data.transactions) throw new Error('格式错误');
+
+      // Clear and rebuild
+      const stores = ['child', 'deposit_source', 'funding_rule', 'transaction', 'app_config', 'rate_log'];
+      for (const store of stores) {
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(store, 'readwrite');
+          const s = tx.objectStore(store);
+          s.clear();
+          tx.oncomplete = resolve;
+          tx.onerror = reject;
+        });
+      }
+
+      // Import data
+      if (data.child) await dbPut('child', data.child);
+      for (const s of (data.sources || [])) await dbPut('deposit_source', s);
+      for (const r of (data.rules || [])) await dbPut('funding_rule', r);
+      for (const t of (data.transactions || [])) await dbPut('transaction', t);
+      for (const c of (data.config ? [data.config] : [])) {
+        // Config is key-value pairs
+        if (typeof c === 'object' && c.key) await dbPut('app_config', c);
+      }
+      // Config might be an object with multiple keys
+      if (data.config && typeof data.config === 'object' && !data.config.key) {
+        for (const [k, v] of Object.entries(data.config)) {
+          if (typeof v === 'string' || typeof v === 'number') {
+            await dbPut('app_config', {key: k, value: String(v), updated_at: new Date().toISOString()});
+          }
+        }
+      }
+      for (const l of (data.rateLogs || [])) await dbPut('rate_log', l);
+
+      showToast('✅ 数据导入成功！');
+      await refreshData();
+    } catch (err) {
+      showToast('❌ 导入失败：' + err.message);
     }
-  }
-});
+  };
+  input.click();
+}
 
-// Amount editing via direct input on amount display
-// We'll use the quick buttons and also allow keyboard input
-$id('amountValue').addEventListener('click',function(){
-  // On mobile, we trigger a hidden number input
-  var inp=document.createElement('input');
-  inp.type='number';
-  inp.inputmode='decimal';
-  inp.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0;';
-  inp.value=currentAmount||'';
-  document.body.appendChild(inp);
-  inp.focus();
-  inp.addEventListener('input',function(){
-    var v=parseFloat(inp.value)||0;
-    currentAmount=v;
-    $id('amountValue').textContent=fmt(v);
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// ============================================================
+// REFRESH DATA
+// ============================================================
+async function refreshData() {
+  state.child = await dbGet('child', 1);
+  state.sources = (await dbGetAll('deposit_source')).sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
+  state.rules = (await dbGetAll('funding_rule')).sort((a,b) => (a.sort_order||0) - (b.sort_order||0));
+  state.transactions = await dbGetAll('transaction');
+  state.rateLogs = await dbGetAll('rate_log');
+
+  // Load config
+  const configs = await dbGetAll('app_config');
+  state.config = {};
+  for (const c of configs) state.config[c.key] = c.value;
+
+  // Render current view
+  if (state.currentTab === 'home') renderHome();
+  else if (state.currentTab === 'transactions') renderTransactions();
+  else if (state.currentTab === 'rules') renderRules();
+  else if (state.currentTab === 'profile') renderProfile();
+}
+
+// ============================================================
+// EVENT BINDINGS
+// ============================================================
+function bindEvents() {
+  // Tab bar
+  document.querySelectorAll('.tab-item').forEach(t => {
+    t.addEventListener('click', () => switchTab(t.dataset.tab));
   });
-  inp.addEventListener('blur',function(){
-    document.body.removeChild(inp);
-    if(currentRecordType==='expense'){
-      $id('expenseTotal').value=currentAmount;
+  document.getElementById('tabRecord').addEventListener('click', () => openRecord('deposit'));
+
+  // Record modal
+  document.getElementById('recordClose').addEventListener('click', closeRecord);
+  document.getElementById('toggleDeposit').addEventListener('click', () => toggleRecordType('deposit'));
+  document.getElementById('toggleExpense').addEventListener('click', () => toggleRecordType('expense'));
+  document.getElementById('submitRecord').addEventListener('click', submitRecord);
+  document.getElementById('expenseType')?.addEventListener('change', updateFundingPreview);
+
+  // Quick amount buttons
+  document.querySelectorAll('.quick-amount-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.currentAmount = btn.dataset.amount;
+      updateAmountDisplay();
       updateFundingPreview();
+    });
+  });
+
+  // Custom amount input (tap on amount display)
+  document.getElementById('amountValue').addEventListener('click', () => {
+    const v = prompt('输入金额', state.currentAmount);
+    if (v !== null) {
+      const n = parseFloat(v);
+      if (!isNaN(n) && n > 0) {
+        state.currentAmount = String(n);
+        updateAmountDisplay();
+        updateFundingPreview();
+      }
     }
   });
-});
 
-$id('expenseTotal').addEventListener('input',function(){
-  currentAmount=parseFloat(this.value)||0;
-  updateFundingPreview();
-});
+  // Source edit
+  document.getElementById('sourceEditClose').addEventListener('click', () => closeModal('sourceEditModal'));
+  document.getElementById('saveSourceBtn').addEventListener('click', saveSource);
 
-// ========== KEYBOARD DISMISS ==========
-document.addEventListener('focusin',function(e){
-  if(e.target.tagName==='INPUT'||e.target.tagName=='SELECT'){
-    document.body.dataset.keyboard='1';
-  }
-});
-document.addEventListener('focusout',function(e){
-  if(e.target.tagName==='INPUT'||e.target.tagName=='SELECT'){
-    document.body.dataset.keyboard='0';
-  }
-});
+  // Rule edit
+  document.getElementById('ruleEditClose').addEventListener('click', () => closeModal('ruleEditModal'));
+  document.getElementById('saveRuleBtn').addEventListener('click', saveRule);
+  document.getElementById('ruleEditRatio').addEventListener('input', function() { updateRuleEditPreview(this.value); });
 
-// ========== SERVICE WORKER REGISTRATION ==========
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').then(function(reg){
-    console.log('SW registered:',reg.scope);
-  }).catch(function(err){
-    console.log('SW registration failed:',err);
+  // Rate modal
+  document.getElementById('rateClose').addEventListener('click', () => closeModal('rateModal'));
+  document.getElementById('rateSlider').addEventListener('input', function() { updateRateDisplay(this.value); });
+  document.getElementById('saveRateBtn').addEventListener('click', saveRate);
+
+  // Trx detail
+  document.getElementById('trxDetailClose').addEventListener('click', () => closeModal('trxDetailModal'));
+
+  // Password modal
+  document.getElementById('pwdCancel').addEventListener('click', closePwdModal);
+  document.getElementById('pwdConfirm').addEventListener('click', confirmPwd);
+  document.getElementById('pwdInput').addEventListener('keydown', e => { if (e.key === 'Enter') confirmPwd(); });
+
+  // Subtitle click
+  document.getElementById('childSubtitle').addEventListener('click', editSubtitle);
+
+  // PWA Install
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installBanner').classList.add('show');
+  });
+  document.getElementById('installBtn').addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      document.getElementById('installBanner').classList.remove('show');
+    }
+  });
+  document.getElementById('installClose').addEventListener('click', () => {
+    document.getElementById('installBanner').classList.remove('show');
   });
 }
 
-// ========== INIT ==========
-(function(){
-  try{
-    initData();
-    calcInterest();
-    renderAll();
-    updateStatusTime();
-    setInterval(updateStatusTime,1000);
-  }catch(e){
-    console.error('Init error:',e);
+// ============================================================
+// PWA SERVICE WORKER
+// ============================================================
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  try {
+    await openDB();
+    await refreshData();
+    await calcPendingInterest();
+    await refreshData();
+    bindEvents();
+    renderHome();
+  } catch (err) {
+    console.error('Init failed:', err);
+    showToast('❌ 初始化失败：' + err.message);
   }
-  // Always hide splash, even if init fails
-  setTimeout(function(){
-    try{
-      $id('splash').classList.add('hide');
-      setTimeout(function(){
-        $id('splash').style.display='none';
-      },500);
-    }catch(e){
-      var sp=document.getElementById('splash');
-      if(sp)sp.style.display='none';
-    }
-  },1500);
-})();
+}
+
+init();
 </script>
 </body>
 </html>
